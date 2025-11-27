@@ -1,55 +1,25 @@
 import React from "react";
-import spineImage from "../assets/spinevideo.png";
-import backPains from "../assets/backpains.jpg";
+import spineImage from "../assets/spinetreatment.jpg";
+import backPain from "../assets/backpain.png";
 import neckPain from "../assets/neckpain.jpg";
 import kneePain from "../assets/kneepain.jpg";
 import sciaticPain from "../assets/sciaticanerverpain.jpg";
-import massage from "../assets/blackbackmassage.jpg";
-import sportsInjury from "../assets/3ac1eac3b3572bf2702902b9db3c07b7.jpg";
-import physioGeneral from "../assets/physio.png";
-import profilePic from "../assets/profilepic.jpg";
+import heelPain from "../assets/Heelpain.png";
+import joints from "../assets/joints.png";
+import footMuscle from "../assets/footmuscle.png";
+import handInjury from "../assets/hand injury.png";
+import discBulge from "../assets/discbulge.png";
 
 const SERVICES_DATA = [
-  {
-    id: 1,
-    title: "Lower Back Pain Relief",
-    image: backPains,
-  },
-  {
-    id: 2,
-    title: "Neck & Shoulder Pain",
-    image: neckPain,
-  },
-  {
-    id: 3,
-    title: "Knee Pain & Joint Rehab",
-    image: kneePain,
-  },
-  {
-    id: 4,
-    title: "Sciatica & Nerve Pain",
-    image: sciaticPain,
-  },
-  {
-    id: 5,
-    title: "Manual Therapy & Massage",
-    image: massage,
-  },
-  {
-    id: 6,
-    title: "Sports Injury Rehabilitation",
-    image: sportsInjury,
-  },
-  {
-    id: 7,
-    title: "Comprehensive Physiotherapy Assessment",
-    image: physioGeneral,
-  },
-  {
-    id: 8,
-    title: "One-on-One Consultations",
-    image: profilePic,
-  },
+  { id: 1, title: "Lower Back Pain Relief", image: backPain },
+  { id: 2, title: "Neck & Shoulder Pain", image: neckPain },
+  { id: 3, title: "Knee Pain & Joint Rehab", image: kneePain },
+  { id: 4, title: "Sciatica & Nerve Pain", image: sciaticPain },
+  { id: 5, title: "Heel Pain & Foot Therapy", image: heelPain },
+  { id: 6, title: "Joint Mobility & Arthritis Care", image: joints },
+  { id: 7, title: "Foot Muscle Strengthening", image: footMuscle },
+  { id: 8, title: "Hand Injury Recovery", image: handInjury },
+  { id: 9, title: "Disc Bulge Treatment", image: discBulge },
 ];
 
 const Services = () => {
@@ -58,7 +28,7 @@ const Services = () => {
       <div className="max-w-[1240px] mx-auto px-6 md:px-10">
         {/* Heading */}
         <div className="text-center">
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-[0.15em] text-[#2EA3DD] ">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-[0.15em] text-[#2EA3DD]">
             PHYSIOTHERAPY SERVICES
           </h1>
           <p className="mt-2 text-sm md:text-base text-white">
@@ -66,7 +36,7 @@ const Services = () => {
           </p>
         </div>
 
-        {/* Featured spine card at the top */}
+        {/* Featured spine image */}
         <div className="mt-10 grid md:grid-cols-1 gap-6 items-center bg-white/90 rounded-3xl shadow-xl overflow-hidden">
           <div>
             <img
@@ -85,24 +55,20 @@ const Services = () => {
           </div>
         </div>
 
-        {/* Grid of service cards */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {/* Service Cards */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {SERVICES_DATA.map((service) => (
             <div
               key={service.id}
-              className="
-                bg-white rounded-2xl overflow-hidden shadow-md
-                transform transition duration-500
-                hover:-translate-y-2 hover:shadow-2xl hover:scale-[1.02]
-              "
+              className="bg-white rounded-2xl overflow-hidden shadow-md transform transition duration-500 hover:-translate-y-2 hover:shadow-2xl hover:scale-[1.03]"
             >
               <img
                 src={service.image}
                 alt={service.title}
-                className="w-full h-[180px] md:h-[220px] object-cover"
+                className="w-full h-[220px] md:h-[260px] object-cover"
               />
-              <div className="p-3 md:p-4">
-                <h4 className="text-xs md:text-sm font-semibold text-[#062B3D]">
+              <div className="p-4 md:p-6">
+                <h4 className="text-base md:text-lg font-semibold text-[#062B3D]">
                   {service.title}
                 </h4>
               </div>
@@ -110,7 +76,6 @@ const Services = () => {
           ))}
         </div>
       </div>
-      
     </section>
   );
 };
