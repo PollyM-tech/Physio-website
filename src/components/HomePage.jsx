@@ -150,17 +150,28 @@ const Homepage = () => {
 
       {/* Footer */}
       <footer className="py-12 bg-[#041E2A] text-white">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <p>&copy; {new Date().getFullYear()} Dr. David Okinda Physiotherapy. All rights reserved.</p>
-          <div className="flex gap-4">
-            <a href="#" className="hover:text-[#2EA3DD] transition-colors">Facebook</a>
-            <a href="#" className="hover:text-[#2EA3DD] transition-colors">Instagram</a>
-            <a href="#" className="hover:text-[#2EA3DD] transition-colors">LinkedIn</a>
-          </div>
-        </div>
-      </footer>
+  <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+    <p>&copy; {new Date().getFullYear()} Dr. David Okinda Physiotherapy. All rights reserved.</p>
+    <div className="flex gap-4 items-center">
+      <a href="#" className="hover:text-[#2EA3DD] transition-colors">Facebook</a>
+      <a href="#" className="hover:text-[#2EA3DD] transition-colors">Instagram</a>
+      <a href="#" className="hover:text-[#2EA3DD] transition-colors">LinkedIn</a>
+
+      {/* Discreet Doctor Login */}
+      <a
+        href="/login"
+        className="ml-6 text-xs text-gray-400 hover:text-gray-200 underline"
+        title="Doctor Login"
+      >
+        DOCTOR DAVID
+      </a>
+    </div>
+  </div>
+</footer>
+
 
     </div>
+    
   );
 };
 

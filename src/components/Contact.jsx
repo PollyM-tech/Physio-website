@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { Phone, Clock, MapPin, MessageSquare } from "lucide-react";
 
-const Contact = () => {
+const ContactPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,25 +18,22 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const { name, phone, location, datetime, message } = formData;
-
-    let formattedDateTime = "not specified";
-    if (datetime) {
-      formattedDateTime = new Date(datetime).toLocaleString("en-KE", {
-        weekday: "short",
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    }
+    let formattedDateTime = datetime
+      ? new Date(datetime).toLocaleString("en-KE", {
+          weekday: "short",
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "not specified";
 
     const text = `
 Hello Dr. David,
 
-A new booking request has been submitted from your website.
+A new booking request has been submitted:
 
 Patient name: ${name}
 Phone: ${phone}
@@ -44,227 +42,135 @@ Preferred date & time: ${formattedDateTime}
 
 Reason for visit:
 ${message || "not specified"}
-
-NOTE:
-• Please call or text the patient to agree on the final date and time.
-• For Kenyatta National Hospital (KNH), kindly remind the patient to visit the hospital in person to complete registration.
-`;
-
+    `;
     const whatsappUrl = `https://wa.me/254714704586?text=${encodeURIComponent(
       text
     )}`;
-
-    // Open WhatsApp chat for Dr. David with all the info
     window.open(whatsappUrl, "_blank");
   };
 
   return (
-    <section className="bg-white text-[#062B3D] border-t border-gray-100 py-16 md:py-20">
-      <div className="max-w-[1240px] mx-auto px-6 md:px-10">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <p className="text-xs tracking-[0.25em] text-[#062B3D] mb-2">
-            CONTACT DR. DAVID
-          </p>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#2EA3DD]">
-            Book an appointment or ask a question
-          </h2>
-          <p className="mt-3 text-sm md:text-base text-gray-600 max-w-[680px] mx-auto">
-            Please call Dr. David first to agree on the best time and location.
-            After you have spoken on the phone, you can use this form to send
-            your details so your booking can be noted. For Kenyatta National
-            Hospital (KNH), please also plan to visit the hospital personally to
-            complete registration.
-          </p>
+    <section className="relative bg-gradient-to-br from-[#eef2f6] via-white to-[#fef9f0] py-24 px-6 md:px-12 overflow-hidden">
+      {/* Floating circles */}
+      <div className="absolute top-0 left-0 w-60 h-60 bg-[#2EA3DD]/20 rounded-full blur-3xl animate-floatSlow -z-10"></div>
+      <div className="absolute bottom-10 right-10 w-72 h-72 bg-[#FBBF24]/20 rounded-full blur-3xl animate-floatSlow2 -z-10"></div>
+
+      {/* Header */}
+      <div className="max-w-4xl mx-auto text-center mb-16">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-[#2EA3DD] mb-4">
+          Get in Touch
+        </h2>
+        <p className="text-gray-700 text-base md:text-lg">
+          Reach out for appointments, questions, or personalized physiotherapy advice. You can contact Dr. David via phone, WhatsApp, or fill out the form below.
+        </p>
+      </div>
+
+      {/* Info + Form */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        {/* Info Cards */}
+        <div className="space-y-6">
+          <div className="flex items-start gap-4 p-6 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all">
+            <MapPin className="text-[#2EA3DD] mt-1" size={28} />
+            <div>
+              <h4 className="font-semibold text-[#062B3D] mb-1">Clinic Locations</h4>
+              <p className="text-gray-600 text-sm">
+                - Kenyatta National Hospital – Physiotherapy Dept<br/>
+                - Tender Touch Clinic – KMA Centre, Upperhill<br/>
+                - House Calls – Nairobi & nearby areas
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-6 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all">
+            <Phone className="text-[#06B6D4] mt-1" size={28} />
+            <div>
+              <h4 className="font-semibold text-[#062B3D] mb-1">Call / SMS</h4>
+              <p className="text-gray-600 text-sm">+254 714 704 586</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-6 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all">
+            <Clock className="text-[#FBBF24] mt-1" size={28} />
+            <div>
+              <h4 className="font-semibold text-[#062B3D] mb-1">Working Hours</h4>
+              <p className="text-gray-600 text-sm">
+                Mon–Fri: 8:00 am – 6:00 pm<br/>
+                Sat: 9:00 am – 1:00 pm<br/>
+                House calls by appointment
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Layout: info + form */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
-          {/* Contact info */}
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-[#062B3D] mb-2">
-                Clinic Locations
-              </h3>
-              <p className="text-sm text-gray-700">
-                Kenyatta National Hospital – Physiotherapy Department
-                <br />
-                Tender Touch Clinic – KMA Centre, Upperhill, Nairobi
-                <br />
-                House Calls – Nairobi and surrounding areas (by agreement)
-              </p>
-              <p className="mt-2 text-xs text-gray-500">
-                For KNH appointments, patients are encouraged to visit the
-                hospital in person to finalize registration and payment.
-              </p>
-            </div>
+        {/* Contact Form */}
+        <div className="bg-white p-8 md:p-12 rounded-3xl shadow-2xl">
+          <h3 className="text-2xl md:text-3xl font-bold mb-6 text-[#2EA3DD]">
+            Send Your Details
+          </h3>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Full Name"
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email (optional)"
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+            />
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Phone Number"
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+              required
+            />
+            <select
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+            >
+              <option>Tender Touch Clinic (KMA Centre, Upperhill)</option>
+              <option>House Call</option>
+              <option>Kenyatta National Hospital (KNH)</option>
+            </select>
+            <input
+              type="datetime-local"
+              name="datetime"
+              value={formData.datetime}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+            />
+            <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              rows="4"
+              placeholder="Briefly describe your concern"
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+            />
 
-            <div>
-              <h3 className="text-lg font-semibold text-[#062B3D] mb-2">
-                Contact Details
-              </h3>
-              <p className="text-sm text-gray-700">
-                Phone (call or SMS):{" "}
-                <span className="font-semibold">+254 714 704 586</span>
-                <br />
-                Email:{" "}
-                <span className="font-semibold">
-                  dr.david.okinda@example.com
-                </span>
-              </p>
-
-              {/* Call button – important since many don’t have WhatsApp */}
-              <a
-                href="tel:+254714704586"
-                className="mt-3 inline-flex items-center px-6 py-2 rounded-full bg-[#2EA3DD] text-white text-sm font-semibold hover:bg-[#0f5e93] transition-colors"
-              >
-                Call Dr. David
-              </a>
-
-              {/* Optional WhatsApp shortcut if the patient has WhatsApp */}
-              <a
-                href={`https://wa.me/254714704586?text=${encodeURIComponent(
-                  "Hello Dr. David, I would like to ask about physiotherapy or booking an appointment."
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 ml-0 md:ml-3 inline-flex items-center px-6 py-2 rounded-full bg-green-500 text-white text-sm font-semibold hover:bg-green-600 transition-colors"
-              >
-                WhatsApp Dr. David
-              </a>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-[#062B3D] mb-2">
-                Working Hours
-              </h3>
-              <p className="text-sm text-gray-700">
-                Monday – Friday: 8:00 am – 6:00 pm
-                <br />
-                Saturday: 9:00 am – 1:00 pm
-                <br />
-                House calls by appointment.
-              </p>
-            </div>
-          </div>
-
-          {/* Contact / booking form */}
-          <div className="bg-[#062B3D] text-white rounded-3xl p-6 md:p-8 shadow-xl">
-            <h3 className="text-xl md:text-2xl font-bold mb-4">
-              Send your details
-            </h3>
-            <p className="text-xs text-gray-200 mb-4">
-              Filling this form does not confirm your appointment. Dr. David
-              will review your details and confirm with you by call or SMS.
-            </p>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div>
-                <label className="block text-sm mb-1" htmlFor="name">
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full rounded-xl px-3 py-2 text-sm text-[#062B3D] focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-                  placeholder="Enter your full name"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm mb-1" htmlFor="email">
-                  Email Address (optional)
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full rounded-xl px-3 py-2 text-sm text-[#062B3D] focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-                  placeholder="you@example.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm mb-1" htmlFor="phone">
-                  Phone Number
-                </label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full rounded-xl px-3 py-2 text-sm text-[#062B3D] focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-                  placeholder="+254..."
-                  required
-                />
-              </div>
-
-              {/* Location select: Tender Touch / House call / KNH */}
-              <div>
-                <label className="block text-sm mb-1" htmlFor="location">
-                  Where would you like to be seen?
-                </label>
-                <select
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  className="w-full rounded-xl px-3 py-2 text-sm text-[#062B3D] focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-                >
-                  <option>Tender Touch Clinic (KMA Centre, Upperhill)</option>
-                  <option>House Call</option>
-                  <option>Kenyatta National Hospital (KNH)</option>
-                </select>
-              </div>
-
-              {/* Preferred date/time */}
-              <div>
-                <label className="block text-sm mb-1" htmlFor="datetime">
-                  Preferred date & time
-                </label>
-                <input
-                  id="datetime"
-                  name="datetime"
-                  type="datetime-local"
-                  value={formData.datetime}
-                  onChange={handleChange}
-                  className="w-full rounded-xl px-3 py-2 text-sm text-[#062B3D] focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm mb-1" htmlFor="message">
-                  Briefly describe your pain or concern
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows="4"
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full rounded-xl px-3 py-2 text-sm text-[#062B3D] focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-                  placeholder="e.g. lower back pain for 3 months, worse when sitting..."
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="mt-2 w-full md:w-auto px-8 py-3 rounded-full bg-[#2EA3DD] text-white font-semibold hover:bg-[#0f5e93] transition-colors"
-              >
-                Send booking details to Dr. David
-              </button>
-            </form>
-          </div>
+            <button
+              type="submit"
+              className="w-full md:w-auto px-8 py-3 rounded-full bg-[#2EA3DD] text-white font-semibold hover:bg-[#0f5e93] transition-colors"
+            >
+              Send Booking Details
+            </button>
+          </form>
         </div>
       </div>
     </section>
   );
 };
 
-export default Contact;
+export default ContactPage;
