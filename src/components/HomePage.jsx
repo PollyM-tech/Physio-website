@@ -5,18 +5,20 @@ import heroImg from "../assets/physio.png";
 const Homepage = () => {
   return (
     <div className="font-sans">
-
       {/* Hero Summary / Welcome */}
       <section className="relative bg-gradient-to-br from-[#f8fafc] via-white to-[#eef3f8] py-24 px-6 text-[#041E2A]">
         <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-10">
-          
-          {/* Left column */}
           <div className="flex-1 animate-fadeInUp">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-              Welcome to <span className="text-[#2EA3DD]">Dr. David Okinda Physiotherapy</span>
+              Welcome to{" "}
+              <span className="text-[#2EA3DD]">
+                Dr. David Okinda Physiotherapy
+              </span>
             </h1>
             <p className="text-gray-700 text-lg mb-6">
-              Personalized physiotherapy care for pain management, injury recovery, and improved mobility. Evidence-based and compassionate treatment to help you regain your best self.
+              Dr. David Okinda is a skilled physiotherapist specializing in pain
+              relief, injury recovery, and improved mobility. Personalized,
+              evidence-based care to help you regain your best self.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/about">
@@ -47,7 +49,7 @@ const Homepage = () => {
       <section className="py-24 px-6 bg-white">
         <div className="max-w-7xl mx-auto text-center mb-16 animate-fadeIn">
           <h2 className="text-4xl md:text-5xl font-extrabold text-[#041E2A]">
-            Our <span className="text-[#2EA3DD]">Services</span>
+            My <span className="text-[#2EA3DD]">Services</span>
           </h2>
           <p className="text-gray-600 text-lg mt-4 max-w-3xl mx-auto">
             Quick overview of physiotherapy services we provide.
@@ -57,20 +59,32 @@ const Homepage = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
           <Link to="/services">
             <div className="p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all bg-[#f9fafb] cursor-pointer">
-              <h3 className="text-2xl font-bold text-[#2EA3DD] mb-2">Pain Management</h3>
-              <p className="text-gray-700">Relieve discomfort and restore comfort quickly.</p>
+              <h3 className="text-2xl font-bold text-[#2EA3DD] mb-2">
+                Pain Management
+              </h3>
+              <p className="text-gray-700">
+                Relieve discomfort and restore comfort quickly.
+              </p>
             </div>
           </Link>
           <Link to="/services">
             <div className="p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all bg-[#f9fafb] cursor-pointer">
-              <h3 className="text-2xl font-bold text-[#2EA3DD] mb-2">Rehabilitation Therapy</h3>
-              <p className="text-gray-700">Regain strength and mobility after injury or surgery.</p>
+              <h3 className="text-2xl font-bold text-[#2EA3DD] mb-2">
+                Rehabilitation Therapy
+              </h3>
+              <p className="text-gray-700">
+                Regain strength and mobility after injury or surgery.
+              </p>
             </div>
           </Link>
           <Link to="/services">
             <div className="p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all bg-[#f9fafb] cursor-pointer">
-              <h3 className="text-2xl font-bold text-[#2EA3DD] mb-2">Sports Injury Care</h3>
-              <p className="text-gray-700">Specialized care for athletes and active individuals.</p>
+              <h3 className="text-2xl font-bold text-[#2EA3DD] mb-2">
+                Sports Injury Care
+              </h3>
+              <p className="text-gray-700">
+                Specialized care for athletes and active individuals.
+              </p>
             </div>
           </Link>
         </div>
@@ -91,7 +105,9 @@ const Homepage = () => {
               About <span className="text-[#2EA3DD]">Me</span>
             </h2>
             <p className="text-gray-700 text-lg mb-6">
-              Over 10 years of experience in physiotherapy, helping patients recover from injuries, manage pain, and improve mobility. Personalized, evidence-based care.
+              Over 10 years of experience in physiotherapy, helping patients
+              recover from injuries, manage pain, and improve mobility.
+              Personalized, evidence-based care.
             </p>
             <Link to="/about">
               <button className="px-6 py-3 rounded-full bg-[#2EA3DD] text-white font-semibold hover:bg-[#0f5e93] transition-all">
@@ -131,18 +147,24 @@ const Homepage = () => {
         </div>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="p-8 rounded-2xl shadow-lg bg-white hover:shadow-2xl transition-all">
-            <p className="text-gray-700 mb-4">"Amazing care and guidance. Recovered quickly from my injury!"</p>
-            <h4 className="font-bold text-[#041E2A]">Jane Doe</h4>
+            <p className="text-gray-700 mb-4">
+              "Amazing care and guidance. Recovered quickly from my injury!"
+            </p>
+            <h4 className="font-bold text-[#041E2A]">Odhiambo</h4>
             <p className="text-gray-500 text-sm">Patient</p>
           </div>
           <div className="p-8 rounded-2xl shadow-lg bg-white hover:shadow-2xl transition-all">
-            <p className="text-gray-700 mb-4">"Professional and caring. I highly recommend Dr. Okinda."</p>
-            <h4 className="font-bold text-[#041E2A]">John Smith</h4>
+            <p className="text-gray-700 mb-4">
+              "Professional and caring. I highly recommend Dr. Okinda."
+            </p>
+            <h4 className="font-bold text-[#041E2A]">Kamau</h4>
             <p className="text-gray-500 text-sm">Patient</p>
           </div>
           <div className="p-8 rounded-2xl shadow-lg bg-white hover:shadow-2xl transition-all">
-            <p className="text-gray-700 mb-4">"The best physiotherapist I've visited. Excellent results."</p>
-            <h4 className="font-bold text-[#041E2A]">Emily Johnson</h4>
+            <p className="text-gray-700 mb-4">
+              "The best physiotherapist I've visited. Excellent results."
+            </p>
+            <h4 className="font-bold text-[#041E2A]">Wanjiru</h4>
             <p className="text-gray-500 text-sm">Patient</p>
           </div>
         </div>
@@ -150,28 +172,28 @@ const Homepage = () => {
 
       {/* Footer */}
       <footer className="py-12 bg-[#041E2A] text-white">
-  <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-    <p>&copy; {new Date().getFullYear()} Dr. David Okinda Physiotherapy. All rights reserved.</p>
-    <div className="flex gap-4 items-center">
-      <a href="#" className="hover:text-[#2EA3DD] transition-colors">Facebook</a>
-      <a href="#" className="hover:text-[#2EA3DD] transition-colors">Instagram</a>
-      <a href="#" className="hover:text-[#2EA3DD] transition-colors">LinkedIn</a>
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <p>
+            &copy; {new Date().getFullYear()} Dr. David Okinda. All rights
+            reserved.
+          </p>
+          <div className="flex gap-4 items-center">
+            <a href="#" className="hover:text-[#2EA3DD] transition-colors">
+              LinkedIn
+            </a>
 
-      {/* Discreet Doctor Login */}
-      <a
-        href="/login"
-        className="ml-6 text-xs text-gray-400 hover:text-gray-200 underline"
-        title="Doctor Login"
-      >
-        DOCTOR DAVID
-      </a>
+            {/* Discreet Doctor Login */}
+            <a
+              href="/login"
+              className="ml-6 text-xs text-gray-400 hover:text-gray-200 underline"
+              title="Doctor Login"
+            >
+              DOCTOR DAVID
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
-  </div>
-</footer>
-
-
-    </div>
-    
   );
 };
 

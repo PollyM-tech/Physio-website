@@ -12,7 +12,7 @@ const DoctorLogin = () => {
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -20,10 +20,10 @@ const DoctorLogin = () => {
     // Dummy login check for now
     setTimeout(() => {
       if (
-        credentials.email === "doctor@example.com" &&
-        credentials.password === "password"
+        credentials.email === "dr.david.okinda@example.com" &&
+        credentials.password === "okinda123"
       ) {
-        // Redirect to doctor dashboard
+        localStorage.setItem("doctor_auth", "true");
         navigate("/doctor/dashboard");
       } else {
         setError("Invalid credentials. Please try again.");
@@ -35,7 +35,6 @@ const DoctorLogin = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-200 animate-fadeIn">
-        
         <h2 className="text-3xl font-bold text-[#2EA3DD] text-center mb-6">
           Doctor Login
         </h2>
@@ -58,7 +57,7 @@ const DoctorLogin = () => {
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-              placeholder="doctor@example.com"
+              placeholder="dr.david.okinda@example.com"
             />
           </div>
 
@@ -73,7 +72,7 @@ const DoctorLogin = () => {
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-              placeholder="Enter your password"
+              placeholder="okinda123"
             />
           </div>
 

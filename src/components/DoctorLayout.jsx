@@ -21,8 +21,10 @@ export default function DoctorLayout() {
   }, [dark]);
 
   const handleLogout = () => {
+    localStorage.removeItem("doctor_auth");
     navigate("/login");
   };
+
 
   const baseLink =
     "flex items-center gap-2 px-3 py-2 rounded transition font-medium";
@@ -67,15 +69,6 @@ export default function DoctorLayout() {
               }
             >
               <History size={18} /> Past Appointments
-            </NavLink>
-
-            <NavLink
-              to="/doctor/profile"
-              className={({ isActive }) =>
-                `${baseLink} ${isActive ? active : inactive}`
-              }
-            >
-              <User size={18} /> Profile
             </NavLink>
           </nav>
         </div>
