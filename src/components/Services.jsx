@@ -101,6 +101,19 @@ const Services = () => {
           ))}
         </div>
       </div>
+      <footer className="py-6 bg-[#041E2A] text-white">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <p>
+            &copy; {new Date().getFullYear()} Dr. David Okinda. All rights
+            reserved.
+          </p>
+          <div className="flex gap-4 items-center">
+            <a href="#" className="hover:text-[#2EA3DD] transition-colors">
+              LinkedIn
+            </a>
+          </div>
+        </div>
+      </footer>
     </section>
   );
 };

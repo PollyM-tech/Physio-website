@@ -1,46 +1,81 @@
-// DoctorDashboardMain.jsx
-import React, { useState, useMemo } from "react";
-
-const initialRequests = [
-  {
-    id: 1,
-    name: "Jane Doe",
-    phone: "+254712345678",
-    location: "Tender Touch Clinic",
-    datetime: "2025-11-28T10:00",
-    message: "Lower back pain for 2 weeks",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    name: "John Smith",
-    phone: "+254701234567",
-    location: "House Call",
-    datetime: "2025-11-29T14:30",
-    message: "Knee pain after jogging",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    name: "Alice",
-    phone: "+254700000000",
-    location: "KNH",
-    datetime: "2025-11-25T09:00",
-    message: "Shoulder pain",
-    status: "Confirmed",
-  },
-];
+// DoctorDashboard.jsx / DoctorDashboardMain.jsx
+import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../apiConfig";
+import toast from "react-hot-toast";
 
 export default function DoctorDashboardMain() {
-  const [requests] = useState(initialRequests);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  // Calculate stats
+  // 🔄 Load appointments from backend on mount
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const token = localStorage.getItem("doctor_token");
+      if (!token) {
+        setError("You must be logged in as doctor.");
+        toast.error("Session expired. Please log in again.");
+        navigate("/login");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/appointments`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || "Failed to load appointments");
+        }
+
+        const data = await res.json();
+        setRequests(data);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || "Error loading appointments");
+        toast.error("Error loading dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, [navigate]);
+
+  // 📊 Calculate stats from live data
   const stats = useMemo(() => {
-    const pending = requests.filter(r => r.status === "Pending").length;
-    const confirmed = requests.filter(r => r.status === "Confirmed").length;
-    const rescheduled = requests.filter(r => r.status === "Rescheduled").length;
+    const pending = requests.filter((r) => r.status === "Pending").length;
+    const confirmed = requests.filter((r) => r.status === "Confirmed").length;
+    const rescheduled = requests.filter(
+      (r) => r.status === "Rescheduled"
+    ).length;
     return { pending, confirmed, rescheduled, total: requests.length };
   }, [requests]);
+
+  if (loading) {
+    return (
+      <p className="text-sm text-gray-500">Loading dashboard overview...</p>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <h1 className="text-2xl font-semibold mb-2">Dashboard Overview</h1>
+        <p className="text-sm text-red-500 mb-2">{error}</p>
+        <p className="text-sm text-gray-500">
+          Try refreshing the page or logging in again.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>

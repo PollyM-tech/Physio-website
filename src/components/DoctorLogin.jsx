@@ -1,5 +1,8 @@
+// DoctorLogin.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../apiConfig";
+import toast from "react-hot-toast";
 
 const DoctorLogin = () => {
   const navigate = useNavigate();
@@ -12,24 +15,41 @@ const DoctorLogin = () => {
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    // Dummy login check for now
-    setTimeout(() => {
-      if (
-        credentials.email === "dr.david.okinda@example.com" &&
-        credentials.password === "okinda123"
-      ) {
-        localStorage.setItem("doctor_auth", "true");
-        navigate("/doctor/dashboard");
-      } else {
-        setError("Invalid credentials. Please try again.");
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/doctor/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.message || "Invalid credentials. Please try again."
+        );
       }
+
+      // ✅ Store doctor token and info
+      localStorage.setItem("doctor_token", data.access_token);
+      localStorage.setItem("doctor_info", JSON.stringify(data.doctor));
+      localStorage.setItem("doctor_auth", "true");
+
+
+      toast.success("Login successful");
+      navigate("/doctor/dashboard");
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+      toast.error(err.message);
+    } finally {
       setLoading(false);
-    }, 900);
+    }
   };
 
   return (
@@ -57,7 +77,7 @@ const DoctorLogin = () => {
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-              placeholder="dr.david.okinda@example.com"
+              placeholder="doctor@example.com"
             />
           </div>
 
@@ -72,7 +92,7 @@ const DoctorLogin = () => {
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
-              placeholder="okinda123"
+              placeholder="********"
             />
           </div>
 

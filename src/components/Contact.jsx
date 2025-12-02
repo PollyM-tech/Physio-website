@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Phone, Clock, MapPin } from "lucide-react";
 import { useAppointments } from "../context/AppointmentsContext";
-
+import { API_BASE_URL } from "../apiConfig";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -17,7 +17,6 @@ const ContactPage = () => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null); // { type: "success" | "error", message: string }
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -32,23 +31,26 @@ const ContactPage = () => {
     setStatus(null);
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/book", {
+      const res = await fetch(`${API_BASE_URL}/api/appointments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (res.ok) {
-        const payload = {
+        body: JSON.stringify({
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
           location: formData.location,
-          datetime: formData.datetime,
+          datetime: formData.datetime, // matches backend key
           message: formData.message,
-        };
+        }),
+      });
 
-        addAppointment(payload);
+      if (res.ok) {
+        const created = await res.json(); // this is appt from backend
+
+        // update local context (if available)
+        if (addAppointment) {
+          addAppointment(created);
+        }
 
         setStatus({
           type: "success",
@@ -65,9 +67,11 @@ const ContactPage = () => {
           message: "",
         });
       } else {
+        const data = await res.json().catch(() => ({}));
         setStatus({
           type: "error",
           message:
+            data.message ||
             "Something went wrong while sending your request. Please try again.",
         });
       }
@@ -192,7 +196,7 @@ const ContactPage = () => {
               placeholder="Phone Number"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
               required
-              pattern="^(?:\+254|254|0)(7|1)[0-9]{8}$|^\+?[0-9]{7,15}$"
+              pattern="^(?:\\+254|254|0)(7|1)[0-9]{8}$|^\\+?[0-9]{7,15}$"
               title="Enter a valid phone number. Kenyan: 0712345678 or +254712345678. International: +123456789"
             />
 
@@ -239,6 +243,19 @@ const ContactPage = () => {
           </form>
         </div>
       </div>
+      <footer className="py-6 bg-[#041E2A] text-white">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <p>
+            &copy; {new Date().getFullYear()} Dr. David Okinda. All rights
+            reserved.
+          </p>
+          <div className="flex gap-4 items-center">
+            <a href="#" className="hover:text-[#2EA3DD] transition-colors">
+              LinkedIn
+            </a>
+          </div>
+        </div>
+      </footer>
     </section>
   );
 };

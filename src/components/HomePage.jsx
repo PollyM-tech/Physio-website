@@ -171,7 +171,7 @@ const Homepage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-[#041E2A] text-white">
+      <footer className="py-6 bg-[#041E2A] text-white">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <p>
             &copy; {new Date().getFullYear()} Dr. David Okinda. All rights

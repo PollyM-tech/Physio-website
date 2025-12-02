@@ -1,23 +1,66 @@
-import React, { useState, useMemo } from "react";
+//check readme notes 
+
+
+import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AppointmentModal from "./AppointmentModal";
 import toast from "react-hot-toast";
-
-const initial = [
-  { id:1, name:"Jane Doe", phone:"+254712345678", location:"Tender Touch Clinic", datetime:"2025-11-28T10:00", message:"Lower back pain", status:"Pending"},
-  { id:2, name:"John Smith", phone:"+254701234567", location:"House Call", datetime:"2025-11-29T14:30", message:"Knee pain", status:"Pending"},
-  { id:3, name:"Alice", phone:"+2547...", location:"KNH", datetime:"2025-11-25T09:00", message:"Shoulder pain", status:"Confirmed"},
-];
+import { API_BASE_URL } from "../apiConfig";
 
 export default function DoctorRequests() {
-  const [requests, setRequests] = useState(initial);
+  const [requests, setRequests] = useState([]);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
+  // 🟢 Load appointments from backend on mount
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const token = localStorage.getItem("doctor_token");
+      if (!token) {
+        setError("You must be logged in as doctor.");
+        toast.error("Session expired. Please log in again.");
+        navigate("/login");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/appointments`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || "Failed to load appointments");
+        }
+
+        const data = await res.json();
+        setRequests(data);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || "Error loading appointments");
+        toast.error("Error loading appointments");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, [navigate]);
+
+  // 🔍 Filters (unchanged logic)
   const filtered = useMemo(() => {
-    return requests.filter(r => {
+    return requests.filter((r) => {
       if (status !== "all" && r.status !== status) return false;
       if (q && !r.name.toLowerCase().includes(q.toLowerCase())) return false;
       if (from && new Date(r.datetime) < new Date(from)) return false;
@@ -26,15 +69,101 @@ export default function DoctorRequests() {
     });
   }, [requests, q, status, from, to]);
 
-  const confirm = (id) => {
-    setRequests(s => s.map(r => r.id === id ? { ...r, status: "Confirmed" } : r));
-    toast.success("Appointment confirmed");
+  // ✅ Confirm appointment → PATCH + update state
+  const confirm = async (id) => {
+    const token = localStorage.getItem("doctor_token");
+    if (!token) {
+      toast.error("Session expired. Please log in again.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/appointments/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "Confirmed" }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || "Failed to confirm appointment");
+      }
+
+      const updated = await res.json();
+
+      setRequests((prev) =>
+        prev.map((r) => (r.id === updated.id ? updated : r))
+      );
+      toast.success("Appointment confirmed");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Error confirming appointment");
+    }
   };
 
-  const reschedule = (id, newDateTime) => {
-    setRequests(s => s.map(r => r.id === id ? { ...r, datetime: newDateTime || r.datetime, status: "Rescheduled" } : r));
-    toast.success("Appointment rescheduled");
+  // ✅ Reschedule appointment → PATCH + update state
+  const reschedule = async (id, newDateTime) => {
+    if (!newDateTime) {
+      toast.error("Please pick a new date and time");
+      return;
+    }
+
+    const token = localStorage.getItem("doctor_token");
+    if (!token) {
+      toast.error("Session expired. Please log in again.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/appointments/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: "Rescheduled",
+          datetime: newDateTime,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || "Failed to reschedule appointment");
+      }
+
+      const updated = await res.json();
+
+      setRequests((prev) =>
+        prev.map((r) => (r.id === updated.id ? updated : r))
+      );
+      toast.success("Appointment rescheduled");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Error rescheduling appointment");
+    }
   };
+
+  // 🌀 Loading & error UI
+  if (loading) {
+    return <p className="text-sm text-gray-500">Loading appointments...</p>;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <p className="text-sm text-red-500 mb-2">{error}</p>
+        <p className="text-sm text-gray-500">
+          Try refreshing the page or logging in again.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -72,15 +201,29 @@ export default function DoctorRequests() {
 
       {/* Appointments list */}
       <div className="grid gap-3">
-        {filtered.map(r => (
-          <div key={r.id} className="bg-white dark:bg-gray-800 p-4 rounded shadow flex justify-between items-start">
+        {filtered.length === 0 && (
+          <p className="text-sm text-gray-500">No appointments found.</p>
+        )}
+
+        {filtered.map((r) => (
+          <div
+            key={r.id}
+            className="bg-white dark:bg-gray-800 p-4 rounded shadow flex justify-between items-start"
+          >
             <div>
               <h4 className="font-semibold">{r.name}</h4>
-              <p className="text-sm text-gray-500 dark:text-gray-300">{r.location} • {new Date(r.datetime).toLocaleString()}</p>
-              <p className="text-sm mt-2 text-gray-600 dark:text-gray-300">{r.message}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-300">
+                {r.location} •{" "}
+                {r.datetime ? new Date(r.datetime).toLocaleString() : "No date"}
+              </p>
+              <p className="text-sm mt-2 text-gray-600 dark:text-gray-300">
+                {r.message}
+              </p>
             </div>
             <div className="flex flex-col items-end gap-2">
-              <div className="text-sm px-2 py-1 rounded bg-yellow-100 dark:bg-yellow-900/30">{r.status}</div>
+              <div className="text-sm px-2 py-1 rounded bg-yellow-100 dark:bg-yellow-900/30">
+                {r.status}
+              </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => confirm(r.id)}
@@ -89,7 +232,9 @@ export default function DoctorRequests() {
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-green-600 hover:bg-green-700"
                   }`}
-                  disabled={r.status === "Confirmed" || r.status === "Rescheduled"}
+                  disabled={
+                    r.status === "Confirmed" || r.status === "Rescheduled"
+                  }
                 >
                   Confirm
                 </button>
@@ -110,8 +255,14 @@ export default function DoctorRequests() {
         <AppointmentModal
           appointment={selected}
           onClose={() => setSelected(null)}
-          onConfirm={(id) => { confirm(id); setSelected(null); }}
-          onReschedule={(id, newDateTime) => { reschedule(id, newDateTime); setSelected(null); }}
+          onConfirm={(id) => {
+            confirm(id);
+            setSelected(null);
+          }}
+          onReschedule={(id, newDateTime) => {
+            reschedule(id, newDateTime);
+            setSelected(null);
+          }}
         />
       )}
     </div>
