@@ -1,5 +1,5 @@
 // DoctorLogin.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../apiConfig";
 import toast from "react-hot-toast";
@@ -9,6 +9,14 @@ const DoctorLogin = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // 🔹 On mount: clear any old auth and redirect if already logged in (optional)
+  useEffect(() => {
+    const alreadyAuthed = localStorage.getItem("doctor_auth") === "true";
+    if (alreadyAuthed) {
+      navigate("/doctor/dashboard");
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,10 +29,15 @@ const DoctorLogin = () => {
     setLoading(true);
 
     try {
+      const payload = {
+        email: credentials.email.trim().toLowerCase(),
+        password: credentials.password,
+      };
+
       const res = await fetch(`${API_BASE_URL}/api/doctor/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -35,11 +48,15 @@ const DoctorLogin = () => {
         );
       }
 
+      // Clear any previous session just in case
+      localStorage.removeItem("doctor_token");
+      localStorage.removeItem("doctor_info");
+      localStorage.removeItem("doctor_auth");
+
       // ✅ Store doctor token and info
       localStorage.setItem("doctor_token", data.access_token);
       localStorage.setItem("doctor_info", JSON.stringify(data.doctor));
       localStorage.setItem("doctor_auth", "true");
-
 
       toast.success("Login successful");
       navigate("/doctor/dashboard");

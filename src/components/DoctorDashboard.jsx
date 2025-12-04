@@ -10,7 +10,6 @@ export default function DoctorDashboardMain() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // 🔄 Load appointments from backend on mount
   useEffect(() => {
     const fetchAppointments = async () => {
       const token = localStorage.getItem("doctor_token");
@@ -29,6 +28,16 @@ export default function DoctorDashboardMain() {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        // 🔹 Special handling for expired/invalid token
+        if (res.status === 401) {
+          localStorage.removeItem("doctor_auth");
+          localStorage.removeItem("doctor_token");
+          localStorage.removeItem("doctor_info");
+          toast.error("Session expired. Please log in again.");
+          navigate("/login");
+          return;
+        }
 
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));

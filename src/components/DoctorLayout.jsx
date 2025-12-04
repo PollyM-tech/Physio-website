@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { Sun, Moon, LogOut, List, Clock, History, User } from "lucide-react";
+import { Sun, Moon, LogOut, List, Clock, History } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
 export default function DoctorLayout() {
@@ -11,6 +11,7 @@ export default function DoctorLayout() {
 
   const navigate = useNavigate();
 
+  // 🔹 Apply dark/light mode on mount & when toggled
   useEffect(() => {
     if (dark) {
       document.documentElement.classList.add("dark");
@@ -20,11 +21,13 @@ export default function DoctorLayout() {
     localStorage.setItem("doctor_theme", dark ? "dark" : "light");
   }, [dark]);
 
+  // 🔹 Logout: clear all doctor-related keys
   const handleLogout = () => {
     localStorage.removeItem("doctor_auth");
+    localStorage.removeItem("doctor_token");
+    localStorage.removeItem("doctor_info");
     navigate("/login");
   };
-
 
   const baseLink =
     "flex items-center gap-2 px-3 py-2 rounded transition font-medium";
@@ -35,6 +38,7 @@ export default function DoctorLayout() {
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 transition">
+      {/* If you move <Toaster /> to main.jsx, you can remove this */}
       <Toaster />
 
       {/* SIDEBAR */}
@@ -43,7 +47,6 @@ export default function DoctorLayout() {
           <h2 className="text-2xl font-bold text-[#2EA3DD] mb-8">Dr. David</h2>
 
           <nav className="flex flex-col gap-2">
-
             <NavLink
               to="/doctor/dashboard"
               className={({ isActive }) =>
@@ -75,7 +78,6 @@ export default function DoctorLayout() {
 
         {/* FOOTER ACTIONS */}
         <div className="flex items-center gap-3 pt-4">
-
           {/* THEME TOGGLE */}
           <button
             onClick={() => setDark((p) => !p)}
@@ -91,7 +93,6 @@ export default function DoctorLayout() {
           >
             <LogOut size={18} /> Logout
           </button>
-
         </div>
       </aside>
 

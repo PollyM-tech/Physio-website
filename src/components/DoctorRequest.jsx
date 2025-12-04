@@ -1,6 +1,3 @@
-//check readme notes 
-
-
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AppointmentModal from "./AppointmentModal";
@@ -39,6 +36,16 @@ export default function DoctorRequests() {
           },
         });
 
+        // 🔹 Handle invalid/expired token
+        if (res.status === 401) {
+          localStorage.removeItem("doctor_auth");
+          localStorage.removeItem("doctor_token");
+          localStorage.removeItem("doctor_info");
+          toast.error("Session expired. Please log in again.");
+          navigate("/login");
+          return;
+        }
+
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           throw new Error(data.message || "Failed to load appointments");
@@ -58,13 +65,20 @@ export default function DoctorRequests() {
     fetchAppointments();
   }, [navigate]);
 
-  // 🔍 Filters (unchanged logic)
+  // 🔍 Filters (search, status, date range)
   const filtered = useMemo(() => {
     return requests.filter((r) => {
       if (status !== "all" && r.status !== status) return false;
       if (q && !r.name.toLowerCase().includes(q.toLowerCase())) return false;
-      if (from && new Date(r.datetime) < new Date(from)) return false;
-      if (to && new Date(r.datetime) > new Date(to)) return false;
+
+      if (from && r.datetime) {
+        if (new Date(r.datetime) < new Date(from)) return false;
+      }
+      if (to && r.datetime) {
+        // add one day to "to" date to make it inclusive if you want
+        if (new Date(r.datetime) > new Date(to)) return false;
+      }
+
       return true;
     });
   }, [requests, q, status, from, to]);
@@ -88,12 +102,21 @@ export default function DoctorRequests() {
         body: JSON.stringify({ status: "Confirmed" }),
       });
 
+      if (res.status === 401) {
+        localStorage.removeItem("doctor_auth");
+        localStorage.removeItem("doctor_token");
+        localStorage.removeItem("doctor_info");
+        toast.error("Session expired. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.message || "Failed to confirm appointment");
       }
 
-      const updated = await res.json();
+      const updated = await res.json(); // backend returns appt.to_dict()
 
       setRequests((prev) =>
         prev.map((r) => (r.id === updated.id ? updated : r))
@@ -131,6 +154,15 @@ export default function DoctorRequests() {
           datetime: newDateTime,
         }),
       });
+
+      if (res.status === 401) {
+        localStorage.removeItem("doctor_auth");
+        localStorage.removeItem("doctor_token");
+        localStorage.removeItem("doctor_info");
+        toast.error("Session expired. Please log in again.");
+        navigate("/login");
+        return;
+      }
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));

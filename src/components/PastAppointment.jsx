@@ -1,5 +1,6 @@
-// PastAppointments.jsx
+// src/components/PastAppointment.jsx
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../apiConfig";
 import toast from "react-hot-toast";
 
@@ -10,6 +11,8 @@ export default function PastAppointments() {
   const [savingId, setSavingId] = useState(null);
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
   // 🔄 Fetch appointments from backend
   useEffect(() => {
     const fetchPast = async () => {
@@ -18,6 +21,7 @@ export default function PastAppointments() {
         toast.error("Session expired. Please log in again.");
         setError("You must be logged in as a doctor.");
         setLoading(false);
+        navigate("/login");
         return;
       }
 
@@ -29,6 +33,15 @@ export default function PastAppointments() {
           },
         });
 
+        if (res.status === 401) {
+          localStorage.removeItem("doctor_auth");
+          localStorage.removeItem("doctor_token");
+          localStorage.removeItem("doctor_info");
+          toast.error("Session expired. Please log in again.");
+          navigate("/login");
+          return;
+        }
+
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           throw new Error(data.message || "Failed to load appointments");
@@ -37,23 +50,23 @@ export default function PastAppointments() {
         const data = await res.json();
         setAppointments(data);
 
-        // Initialize notesDraft with existing doctor_notes
+        // Initialize notesDraft with existing doctor_notes (if you want to start with them)
         const initialNotes = {};
         data.forEach((a) => {
-          initialNotes[a.id] = a.doctor_notes || "";
+          initialNotes[a.id] = ""; // start textarea EMPTY to avoid confusion
         });
         setNotesDraft(initialNotes);
       } catch (err) {
         console.error(err);
         toast.error("Error loading past appointments");
-        setError(err.message);
+        setError(err.message || "Error loading past appointments");
       } finally {
         setLoading(false);
       }
     };
 
     fetchPast();
-  }, []);
+  }, [navigate]);
 
   // 🕒 Filter to only past appointments (before now)
   const past = useMemo(() => {
@@ -86,7 +99,7 @@ export default function PastAppointments() {
         p.name,
         p.phone,
         p.location,
-        new Date(p.datetime).toLocaleString(),
+        p.datetime ? new Date(p.datetime).toLocaleString() : "",
         p.status,
         p.message || "",
         p.doctor_notes || "",
@@ -111,6 +124,7 @@ export default function PastAppointments() {
     const token = localStorage.getItem("doctor_token");
     if (!token) {
       toast.error("Session expired. Please log in again.");
+      navigate("/login");
       return;
     }
 
@@ -127,6 +141,15 @@ export default function PastAppointments() {
         body: JSON.stringify({ notes }),
       });
 
+      if (res.status === 401) {
+        localStorage.removeItem("doctor_auth");
+        localStorage.removeItem("doctor_token");
+        localStorage.removeItem("doctor_info");
+        toast.error("Session expired. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.message || "Failed to save notes");
@@ -138,6 +161,13 @@ export default function PastAppointments() {
       setAppointments((prev) =>
         prev.map((a) => (a.id === updated.id ? updated : a))
       );
+
+      // 🔹 Clear the draft so textarea becomes empty after save
+      setNotesDraft((prev) => {
+        const copy = { ...prev };
+        copy[updated.id] = ""; // or delete copy[updated.id]
+        return copy;
+      });
 
       toast.success("Notes saved");
     } catch (err) {
@@ -196,7 +226,10 @@ export default function PastAppointments() {
                     <span className="text-sm text-gray-500">({p.phone})</span>
                   </h4>
                   <p className="text-sm text-gray-500">
-                    {p.location} • {new Date(p.datetime).toLocaleString()}
+                    {p.location} •{" "}
+                    {p.datetime
+                      ? new Date(p.datetime).toLocaleString()
+                      : "No date"}
                   </p>
                 </div>
                 <div className="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700">
@@ -209,15 +242,23 @@ export default function PastAppointments() {
                 {p.message || "No description provided"}
               </p>
 
-              {/* ✅ Doctor notes editor */}
+              {/* Show last saved notes separately (read-only) */}
+              {p.doctor_notes && (
+                <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                  <span className="font-semibold">Last saved notes: </span>
+                  {p.doctor_notes}
+                </p>
+              )}
+
+              {/* ✅ Doctor notes editor (clears after save) */}
               <div className="mt-2">
                 <label className="block text-sm font-medium mb-1">
-                  Doctor’s Notes
+                  Add / Update Doctor’s Notes
                 </label>
                 <textarea
                   rows="3"
                   className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700"
-                  value={notesDraft[p.id] ?? p.doctor_notes ?? ""}
+                  value={notesDraft[p.id] ?? ""} // textarea is EMPTY after save
                   onChange={(e) =>
                     setNotesDraft((prev) => ({
                       ...prev,
