@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from "react";
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import About from "./components/About";
@@ -13,17 +13,30 @@ import DoctorLayout from "./components/DoctorLayout";
 import DoctorDashboardMain from "./components/DoctorDashboard";
 import DoctorRequests from "./components/DoctorRequest";
 import PastAppointments from "./components/PastAppointment";
+import DoctorSchedule from "./components/Doctorschedule";
+import PatientDetail from "./components/PatientProfile"; // patient profile
 
-import { AppointmentsProvider } from "./context/AppointmentsContext";
+import { AppointmentsProvider } from "./context/Appointmentprovider";
 
-// Frontend-only guard for doctor area
+/* ---------------------------------------------------
+   Frontend-only guard for doctor area
+---------------------------------------------------- */
 function RequireDoctorAuth() {
   const authed = localStorage.getItem("doctor_auth") === "true";
-  return authed ? <DoctorLayout /> : <Navigate to="/login" replace />;
+  const location = useLocation(); // track where user wanted to go
+
+  if (!authed) {
+    // Redirect to login and store intended path
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <Outlet />;
 }
 
 export default function App() {
   const location = useLocation();
+
+  // Hide navbar on doctor routes
   const hideNavbar = location.pathname.startsWith("/doctor");
 
   return (
@@ -43,13 +56,14 @@ export default function App() {
 
           {/* Protected doctor area */}
           <Route path="/doctor" element={<RequireDoctorAuth />}>
-            <Route index element={<DoctorDashboardMain />} /> {/* /doctor */}
-            <Route path="dashboard" element={<DoctorDashboardMain />} />{" "}
-            {/* /doctor/dashboard */}
-            <Route path="requests" element={<DoctorRequests />} />{" "}
-            {/* /doctor/requests */}
-            <Route path="past" element={<PastAppointments />} />{" "}
-            {/* /doctor/past */}
+            <Route element={<DoctorLayout />}>
+              <Route index element={<DoctorDashboardMain />} />
+              <Route path="dashboard" element={<DoctorDashboardMain />} />
+              <Route path="schedule" element={<DoctorSchedule />} />
+              <Route path="requests" element={<DoctorRequests />} />
+              <Route path="past" element={<PastAppointments />} />
+              <Route path="patients/:id" element={<PatientDetail />} />
+            </Route>
           </Route>
 
           {/* Fallback */}

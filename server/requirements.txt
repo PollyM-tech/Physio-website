@@ -5,6 +5,7 @@ Flask-Migrate
 Flask-Bcrypt
 Flask-JWT-Extended
 Flask-Mail
+Flask-RESTful
 python-dotenv
 sqlalchemy-serializer
 PyJWT

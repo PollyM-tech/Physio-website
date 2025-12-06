@@ -1,4 +1,4 @@
-// src/components/PastAppointment.jsx
+// src/components/PastAppointments.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../apiConfig";
@@ -6,20 +6,19 @@ import toast from "react-hot-toast";
 
 export default function PastAppointments() {
   const [appointments, setAppointments] = useState([]);
-  const [notesDraft, setNotesDraft] = useState({}); // id -> draft text
+  const [notesDraft, setNotesDraft] = useState({});
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  // 🔄 Fetch appointments from backend
+  // 🔄 Fetch past appointments
   useEffect(() => {
     const fetchPast = async () => {
       const token = localStorage.getItem("doctor_token");
       if (!token) {
         toast.error("Session expired. Please log in again.");
-        setError("You must be logged in as a doctor.");
         setLoading(false);
         navigate("/login");
         return;
@@ -34,32 +33,22 @@ export default function PastAppointments() {
         });
 
         if (res.status === 401) {
-          localStorage.removeItem("doctor_auth");
-          localStorage.removeItem("doctor_token");
-          localStorage.removeItem("doctor_info");
-          toast.error("Session expired. Please log in again.");
+          toast.error("Session expired.");
           navigate("/login");
           return;
         }
 
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.message || "Failed to load appointments");
-        }
+        if (!res.ok) throw new Error("Failed to load appointments");
 
         const data = await res.json();
         setAppointments(data);
 
-        // Initialize notesDraft with existing doctor_notes (if you want to start with them)
-        const initialNotes = {};
-        data.forEach((a) => {
-          initialNotes[a.id] = ""; // start textarea EMPTY to avoid confusion
-        });
-        setNotesDraft(initialNotes);
+        const drafts = {};
+        data.forEach((a) => (drafts[a.id] = ""));
+        setNotesDraft(drafts);
       } catch (err) {
-        console.error(err);
-        toast.error("Error loading past appointments");
-        setError(err.message || "Error loading past appointments");
+        toast.error("Error loading appointments");
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -68,22 +57,17 @@ export default function PastAppointments() {
     fetchPast();
   }, [navigate]);
 
-  // 🕒 Filter to only past appointments (before now)
+  // 🕓 Filter past appointments only
   const past = useMemo(() => {
     const now = new Date();
-    return appointments.filter((a) => {
-      if (!a.datetime) return false;
-      const dt = new Date(a.datetime);
-      return dt < now;
-    });
+    return appointments.filter(
+      (a) => a.datetime && new Date(a.datetime) < now
+    );
   }, [appointments]);
 
-  // 📤 Export CSV with notes
+  // 📤 Export CSV
   const exportCSV = () => {
-    if (past.length === 0) {
-      toast.error("No past appointments to export");
-      return;
-    }
+    if (!past.length) return toast.error("No data to export");
 
     const csv = [
       [
@@ -105,30 +89,28 @@ export default function PastAppointments() {
         p.doctor_notes || "",
       ]),
     ]
-      .map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
-      )
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
       .join("\n");
 
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
+
     const a = document.createElement("a");
     a.href = url;
     a.download = "past_appointments.csv";
     a.click();
+
     URL.revokeObjectURL(url);
   };
 
-  // 💾 Save notes for a single appointment
+  // 💾 Save doctor notes
   const saveNotes = async (id) => {
     const token = localStorage.getItem("doctor_token");
     if (!token) {
-      toast.error("Session expired. Please log in again.");
+      toast.error("Login expired");
       navigate("/login");
       return;
     }
-
-    const notes = notesDraft[id] || "";
 
     setSavingId(id);
     try {
@@ -138,151 +120,158 @@ export default function PastAppointments() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ notes }),
+        body: JSON.stringify({ notes: notesDraft[id] }),
       });
 
-      if (res.status === 401) {
-        localStorage.removeItem("doctor_auth");
-        localStorage.removeItem("doctor_token");
-        localStorage.removeItem("doctor_info");
-        toast.error("Session expired. Please log in again.");
-        navigate("/login");
-        return;
-      }
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || "Failed to save notes");
-      }
+      if (!res.ok) throw new Error("Failed to save");
 
       const updated = await res.json();
 
-      // Update appointments state with new doctor_notes
       setAppointments((prev) =>
         prev.map((a) => (a.id === updated.id ? updated : a))
       );
 
-      // 🔹 Clear the draft so textarea becomes empty after save
-      setNotesDraft((prev) => {
-        const copy = { ...prev };
-        copy[updated.id] = ""; // or delete copy[updated.id]
-        return copy;
-      });
+      setNotesDraft((prev) => ({ ...prev, [id]: "" }));
 
       toast.success("Notes saved");
-    } catch (err) {
-      console.error(err);
-      toast.error(err.message || "Error saving notes");
+    } catch {
+      toast.error("Save failed");
     } finally {
       setSavingId(null);
     }
   };
 
-  // 🌀 Loading / error
-  if (loading) {
+  // ⏳ Loading / Error UI
+  if (loading)
     return (
-      <p className="text-sm text-gray-500">Loading past appointments...</p>
+      <p className="text-center text-slate-400 animate-pulse">
+        Loading past appointments...
+      </p>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Past Appointments</h2>
-        <p className="text-sm text-red-500 mb-2">{error}</p>
-        <p className="text-sm text-gray-500">
-          Try refreshing or logging in again.
-        </p>
+      <div className="text-center text-red-500">
+        <p>{error}</p>
       </div>
     );
-  }
 
   return (
-    <div>
-      {/* Header + Export */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Past Appointments</h2>
+    <section className="space-y-6">
+      {/* 🧠 Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 className="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">
+          Past Appointments
+        </h2>
+
         <button
           onClick={exportCSV}
-          className="px-3 py-2 rounded bg-[#2EA3DD] text-white hover:bg-[#0f5e93]"
+          className="
+            bg-gradient-to-r from-[#2EA3DD] to-[#0f5e93]
+            text-white px-4 py-2 rounded-lg
+            shadow hover:shadow-lg transition-all
+          "
         >
           Export CSV
         </button>
       </div>
 
-      {past.length === 0 ? (
-        <p className="text-sm text-gray-500">No past appointments yet.</p>
-      ) : (
-        <div className="grid gap-3">
-          {past.map((p) => (
-            <div
-              key={p.id}
-              className="bg-white dark:bg-gray-800 p-4 rounded shadow"
-            >
-              <div className="flex justify-between mb-2">
-                <div>
-                  <h4 className="font-semibold">
-                    {p.name}{" "}
-                    <span className="text-sm text-gray-500">({p.phone})</span>
-                  </h4>
-                  <p className="text-sm text-gray-500">
-                    {p.location} •{" "}
-                    {p.datetime
-                      ? new Date(p.datetime).toLocaleString()
-                      : "No date"}
-                  </p>
-                </div>
-                <div className="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700">
-                  {p.status}
-                </div>
-              </div>
-
-              <p className="mb-3 text-gray-700 dark:text-gray-300">
-                <span className="font-semibold">Patient note: </span>
-                {p.message || "No description provided"}
-              </p>
-
-              {/* Show last saved notes separately (read-only) */}
-              {p.doctor_notes && (
-                <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold">Last saved notes: </span>
-                  {p.doctor_notes}
-                </p>
-              )}
-
-              {/* ✅ Doctor notes editor (clears after save) */}
-              <div className="mt-2">
-                <label className="block text-sm font-medium mb-1">
-                  Add / Update Doctor’s Notes
-                </label>
-                <textarea
-                  rows="3"
-                  className="w-full rounded border px-3 py-2 text-sm dark:bg-gray-700"
-                  value={notesDraft[p.id] ?? ""} // textarea is EMPTY after save
-                  onChange={(e) =>
-                    setNotesDraft((prev) => ({
-                      ...prev,
-                      [p.id]: e.target.value,
-                    }))
-                  }
-                  placeholder="Add follow-up, progress, or clinical notes..."
-                />
-                <button
-                  onClick={() => saveNotes(p.id)}
-                  disabled={savingId === p.id}
-                  className={`mt-2 px-3 py-2 rounded text-white ${
-                    savingId === p.id
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-[#2EA3DD] hover:bg-[#0f5e93]"
-                  }`}
-                >
-                  {savingId === p.id ? "Saving..." : "Save Notes"}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Empty state */}
+      {!past.length && (
+        <p className="text-slate-400">No past appointments available.</p>
       )}
-    </div>
+
+      {/* 📋 Cards Grid */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {past.map((p) => (
+          <div
+            key={p.id}
+            className="
+              bg-white/80 dark:bg-gray-800/80
+              backdrop-blur border border-slate-200 dark:border-slate-700
+              p-5 rounded-2xl shadow 
+              transition hover:shadow-xl hover:-translate-y-1
+            "
+          >
+            {/* Card Header */}
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="font-semibold text-lg">
+                  {p.name}
+                  <span className="text-sm text-slate-400 ml-1">
+                    ({p.phone})
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  {p.location} •{" "}
+                  {p.datetime
+                    ? new Date(p.datetime).toLocaleString()
+                    : "No date"}
+                </p>
+              </div>
+
+              <span
+                className="
+                  px-3 py-1 text-xs rounded-full font-medium
+                  bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300
+                "
+              >
+                {p.status}
+              </span>
+            </div>
+
+            {/* Patient Note */}
+            <p className="text-sm text-slate-700 dark:text-slate-300 mb-2">
+              <span className="font-semibold">Patient:</span>{" "}
+              {p.message || "No message"}
+            </p>
+
+            {/* Previous doctor notes */}
+            {p.doctor_notes && (
+              <p className="text-xs italic text-slate-400 mb-3">
+                <span className="font-medium">Last notes:</span>{" "}
+                {p.doctor_notes}
+              </p>
+            )}
+
+            {/* Notes Editor */}
+            <div className="space-y-2">
+              <textarea
+                rows={3}
+                className="
+                  w-full rounded-lg border px-3 py-2 text-sm
+                  dark:bg-gray-700 focus:ring-2 focus:ring-sky-400
+                  focus:outline-none
+                "
+                value={notesDraft[p.id] || ""}
+                onChange={(e) =>
+                  setNotesDraft((prev) => ({
+                    ...prev,
+                    [p.id]: e.target.value,
+                  }))
+                }
+                placeholder="Enter updated clinical notes..."
+              />
+
+              <button
+                onClick={() => saveNotes(p.id)}
+                disabled={savingId === p.id}
+                className={`
+                  w-full py-2 rounded-lg text-white text-sm
+                  transition-all 
+                  ${
+                    savingId === p.id
+                      ? "bg-slate-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-[#2EA3DD] to-[#0f5e93] hover:shadow-md"
+                  }
+                `}
+              >
+                {savingId === p.id ? "Saving..." : "Save Notes"}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
