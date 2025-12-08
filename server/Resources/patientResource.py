@@ -1,6 +1,6 @@
-from flask import jsonify
+# backend/Resources/patientResource.py
 from flask_restful import Resource
-from models import Patient, db
+from models import Patient
 
 class PatientResource(Resource):
     def get(self, patient_id):

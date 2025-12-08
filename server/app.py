@@ -3,16 +3,15 @@ import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
-from flask_restful import Api, Resource
+from flask_restful import Api
 from dotenv import load_dotenv
 
 from extensions import db, bcrypt, jwt, mail
-from models import Doctor, Appointment, Patient
-
+from models import Doctor, Appointment, Patient  # Patient is optional now
 from Resources.LoginResource import DoctorLoginResource
 from Resources.AppointmentResource import AppointmentResource
 from Resources.AppointmentListResource import AppointmentListResource
-from Resources.patientResource import PatientResource
+from Resources.patientResource import PatientResource  # ← use this one
 
 load_dotenv()
 
@@ -45,35 +44,15 @@ migrate = Migrate(app, db)
 
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-# ── ROOT ROUTE ─────────────────────────────
 @app.route("/")
 def index():
     return jsonify({"message": "Welcome to Dr. David physio session"}), 200
-
-
-# ── PATIENT RESOURCE ─────────────────────────
-class PatientResource(Resource):
-    def get(self, patient_id):
-        patient = Patient.query.get(patient_id)
-        if not patient:
-            return {"error": "Patient not found"}, 404
-        return {
-            "id": patient.id,
-            "name": patient.name,
-            "phone": patient.phone,
-            "email": patient.email,
-            "location": patient.location,
-            "dob": patient.dob,
-            "medical_notes": patient.medical_notes,
-        }, 200
-
 
 # ── API ROUTES ─────────────────────────────
 api.add_resource(DoctorLoginResource, "/api/doctor/login")
 api.add_resource(AppointmentListResource, "/api/appointments")
 api.add_resource(AppointmentResource, "/api/appointments/<int:appt_id>")
-api.add_resource(PatientResource, "/api/patients/<int:patient_id>") 
+api.add_resource(PatientResource, "/api/patients/<int:patient_id>")
 
-# ── RUN APP ─────────────────────────────
 if __name__ == "__main__":
     app.run(debug=True)
