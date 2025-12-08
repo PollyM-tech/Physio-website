@@ -3,109 +3,320 @@ import { useParams } from "react-router-dom";
 import { API_BASE_URL } from "../apiConfig";
 import toast from "react-hot-toast";
 
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Cake,
+  FileText,
+  User,
+  Pencil,
+  HeartPulse,
+  Calendar,
+  Download,
+  Upload
+} from "lucide-react";
+
 export default function PatientProfile() {
   const { id } = useParams();
+
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+
+  const [sessions, setSessions] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+
+  // =====================================================
+  // DATA LOADING
+  // =====================================================
 
   useEffect(() => {
-    const fetchPatient = async () => {
-      const token = localStorage.getItem("doctor_token");
-      if (!token) {
-        toast.error("You must be logged in to view patient details.");
-        setLoading(false);
-        return;
-      }
+    const token = localStorage.getItem("doctor_token");
 
+    if (!token) {
+      toast.error("Login required");
+      return;
+    }
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    };
+
+    async function loadData() {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/patients/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
+        const profile = await fetch(`${API_BASE_URL}/api/patients/${id}`, {
+          headers,
+          credentials: "include"
         });
 
-        if (res.status === 404) {
-          toast.error("Patient not found.");
-          setPatient(null);
-          return;
-        }
+        if (!profile.ok) throw new Error();
+        setPatient(await profile.json());
 
-        if (!res.ok) {
-          toast.error("Failed to fetch patient profile.");
-          setPatient(null);
-          return;
-        }
+        // Optional future API hooks — update when endpoints exist
+        const sess = await fetch(`${API_BASE_URL}/api/patients/${id}/sessions`, {
+          headers
+        }).then(r => r.ok ? r.json() : []);
 
-        const data = await res.json();
-        if (!data || Object.keys(data).length === 0) {
-          toast.error("Patient data is empty.");
-          setPatient(null);
-          return;
-        }
+        const app = await fetch(`${API_BASE_URL}/api/patients/${id}/appointments`, {
+          headers
+        }).then(r => r.ok ? r.json() : []);
 
-        setPatient(data);
-      } catch (err) {
-        console.error(err);
-        toast.error("An unexpected error occurred.");
-        setPatient(null);
+        setSessions(sess);
+        setAppointments(app);
+
+      } catch {
+        toast.error("Failed to load patient data");
       } finally {
         setLoading(false);
       }
-    };
+    }
 
-    fetchPatient();
+    loadData();
+
   }, [id]);
 
   if (loading)
-    return <p className="text-center mt-10 text-gray-500">Loading patient profile...</p>;
+    return (
+      <div className="text-center mt-20 animate-pulse text-indigo-600">
+        Loading patient profile...
+      </div>
+    );
 
   if (!patient)
-    return <p className="text-center mt-10 text-red-500 font-medium">Patient not found.</p>;
+    return (
+      <div className="text-center text-red-500 font-semibold mt-20">
+        Patient not found
+      </div>
+    );
 
   return (
-    <div className="max-w-4xl mx-auto mt-8 space-y-6 p-4">
-      {/* Profile Header */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-6 flex items-center gap-6">
-        <div className="text-indigo-500 text-4xl">👤</div>
-        <div>
-          <h1 className="text-3xl font-bold text-indigo-700">{patient.name}</h1>
-          <p className="text-sm text-gray-500 mt-1">Patient ID: {patient.id}</p>
+    <div className="min-h-screen bg-gradient-to-tr from-indigo-50 via-sky-50 to-indigo-100 p-6">
+
+      <div className="max-w-7xl mx-auto space-y-10">
+
+        {/* ================= QUICK BAR ================= */}
+        <div className="flex flex-wrap justify-end gap-3">
+          <ActionButton icon={Pencil} label="Edit Profile" onClick={() => setEditing(true)} />
+          <ActionButton icon={Download} label="Export PDF" />
+          <ActionButton icon={Upload} label="Upload Docs" />
         </div>
+
+        {/* ================= HEADER ================= */}
+        <div className="bg-white/70 backdrop-blur-md shadow-xl rounded-3xl p-6 flex items-center gap-6">
+          <div className="h-20 w-20 flex items-center justify-center bg-gradient-to-tr from-indigo-500 to-blue-500 text-white rounded-full shadow-lg">
+            <User size={36} />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold text-indigo-700">
+              {patient.name}
+            </h1>
+            <p className="text-gray-500">
+              ID: {patient.id}
+            </p>
+          </div>
+        </div>
+
+        {/* ================= CORE INFO ================= */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <InfoCard icon={Phone} label="Phone" value={patient.phone} />
+          <InfoCard icon={Mail} label="Email" value={patient.email} />
+          <InfoCard icon={MapPin} label="Location" value={patient.location} />
+          <InfoCard icon={Cake} label="DOB" value={patient.dob} />
+        </div>
+
+        {/* ================= VITALS ================= */}
+        <Panel title="Vitals" icon={HeartPulse}>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+
+            <Vital label="Pain Level" value="3 / 10" />
+            <Vital label="Mobility" value="72%" />
+            <Vital label="BP" value="118 / 78" />
+            <Vital label="Pulse" value="74 bpm" />
+
+          </div>
+        </Panel>
+
+        {/* ================= APPOINTMENTS ================= */}
+        <Panel title="Appointments" icon={Calendar}>
+          <Timeline
+            data={appointments}
+            emptyText="No appointment history yet."
+          />
+        </Panel>
+
+        {/* ================= TREATMENT SESSIONS ================= */}
+        <Panel title="Treatment Sessions" icon={FileText}>
+          <Timeline
+            data={sessions}
+            emptyText="No treatment sessions logged."
+          />
+        </Panel>
+
+        {/* ================= NOTES ================= */}
+        <Panel title="Medical Notes" icon={FileText}>
+          <p className="text-gray-700 whitespace-pre-line">
+            {patient.medical_notes || "No notes added yet."}
+          </p>
+        </Panel>
+
       </div>
 
-      {/* Contact & Info */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <InfoCard icon="📞" label="Phone" value={patient.phone || "—"} />
-        <InfoCard icon="✉️" label="Email" value={patient.email || "—"} />
-        <InfoCard icon="📍" label="Location" value={patient.location || "—"} />
-        <InfoCard icon="🎂" label="DOB" value={patient.dob || "—"} />
-      </div>
+      {editing && (
+        <EditModal patient={patient} setEditing={setEditing} />
+      )}
 
-      {/* Medical Notes */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Medical Notes</h2>
-        {patient.medical_notes ? (
-          <p className="text-gray-600 whitespace-pre-line">{patient.medical_notes}</p>
-        ) : (
-          <p className="text-gray-400 italic">No medical notes available.</p>
-        )}
-      </div>
     </div>
   );
 }
 
 /* ===================================================== */
-/* Info Card Component */
+/*                   COMPONENTS                         */
 /* ===================================================== */
-function InfoCard({ icon, label, value }) {
+
+function Panel({ title, icon, children }) {
+  const Icon = icon;
+
   return (
-    <div className="flex items-center gap-3 p-4 bg-indigo-50 rounded-xl hover:shadow-lg transition">
-      <div className="text-2xl">{icon}</div>
-      <div>
-        <p className="text-xs text-gray-500">{label}</p>
-        <p className="font-medium text-gray-700">{value}</p>
+    <div className="bg-white/70 backdrop-blur-lg border border-white/30 shadow-xl rounded-3xl px-8 py-6">
+      <header className="flex items-center gap-3 mb-5 text-indigo-700">
+        <Icon size={22} />
+        <h2 className="text-xl font-bold">{title}</h2>
+      </header>
+      {children}
+    </div>
+  );
+}
+
+function InfoCard({ icon, label, value }) {
+  const Icon = icon;
+
+  return (
+    <div className="bg-white/60 backdrop-blur-lg border border-white/40 shadow-md hover:shadow-xl rounded-2xl p-5 hover:-translate-y-1 transition-all duration-300">
+      <div className="flex gap-4 items-center">
+        <div className="p-3 bg-gradient-to-tr from-indigo-500 to-blue-500 text-white rounded-xl">
+          <Icon size={18} />
+        </div>
+        <div>
+          <p className="text-xs uppercase tracking-wide text-gray-500">
+            {label}
+          </p>
+          <p className="font-semibold text-gray-800">
+            {value || "—"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Vital({ label, value }) {
+  return (
+    <div className="bg-indigo-50 rounded-xl p-4 text-center">
+      <p className="text-sm text-gray-500">
+        {label}
+      </p>
+      <p className="mt-1 text-xl font-bold text-indigo-700">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function Timeline({ data, emptyText }) {
+  if (!data || !data.length)
+    return (
+      <p className="italic text-gray-400">
+        {emptyText}
+      </p>
+    );
+
+  return (
+    <ul className="space-y-3">
+      {data.map((item, i) => (
+        <li key={i} className="bg-indigo-50 p-4 rounded-xl">
+          <p className="text-sm text-gray-500">
+            {item.date || "Unknown Date"}
+          </p>
+          <p className="text-gray-800">
+            {item.note || JSON.stringify(item)}
+          </p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ActionButton({ icon, label, onClick }) {
+  const Icon = icon;
+  return (
+    <button
+      onClick={onClick}
+      className="flex gap-2 items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition"
+    >
+      <Icon size={18} />
+      {label}
+    </button>
+  );
+}
+
+function EditModal({ patient, setEditing }) {
+  const [form, setForm] = useState(patient);
+
+  const updateField = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  return (
+    <div className="fixed inset-0 bg-black/50 glass grid place-items-center z-50">
+      <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-xl">
+        <h3 className="text-xl font-bold text-indigo-600 mb-4">
+          Edit Patient
+        </h3>
+
+        <div className="grid gap-3">
+          <input
+            name="name"
+            value={form.name}
+            onChange={updateField}
+            placeholder="Name"
+            className="input"
+          />
+          <input
+            name="phone"
+            value={form.phone}
+            onChange={updateField}
+            placeholder="Phone"
+            className="input"
+          />
+          <input
+            name="email"
+            value={form.email}
+            onChange={updateField}
+            placeholder="Email"
+            className="input"
+          />
+        </div>
+
+        <div className="flex justify-end gap-3 mt-5">
+          <button
+            onClick={() => setEditing(false)}
+            className="px-4 py-2 bg-gray-200 rounded-lg"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={() => {
+              toast.success("Profile updated (mock)");
+              setEditing(false);
+            }}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
+          >
+            Save
+          </button>
+        </div>
       </div>
     </div>
   );
