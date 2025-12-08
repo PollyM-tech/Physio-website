@@ -9,3 +9,5 @@ Flask-RESTful
 python-dotenv
 sqlalchemy-serializer
 PyJWT
+gunicorn
+
