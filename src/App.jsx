@@ -7,6 +7,7 @@ import About from "./components/About";
 import Services from "./components/Services";
 import ContactPage from "./components/Contact";
 import Homepage from "./components/HomePage";
+import AppointmentDetails from "./components/AppointmentDetails";
 
 import DoctorLogin from "./components/DoctorLogin";
 import DoctorLayout from "./components/DoctorLayout";
@@ -62,7 +63,11 @@ export default function App() {
               <Route path="schedule" element={<DoctorSchedule />} />
               <Route path="requests" element={<DoctorRequests />} />
               <Route path="past" element={<PastAppointments />} />
-              <Route path="patients/:id" element={<PatientDetail />} />
+
+              <Route
+                path="/doctor/appointments/:id"
+                element={<AppointmentDetails />}
+              />
             </Route>
           </Route>
 

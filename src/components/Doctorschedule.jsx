@@ -159,15 +159,17 @@ function AppointmentCard({ a, navigate, onReschedule }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 hover:shadow-lg transition border border-gray-200 dark:border-gray-700">
       <h3 className="font-bold">{a.name}</h3>
-      <p className="text-sm text-gray-500">{new Date(a.datetime).toLocaleString()}</p>
+      <p className="text-sm text-gray-500">
+        {new Date(a.datetime).toLocaleString()}
+      </p>
       <p className="text-sm">{a.location}</p>
 
       <div className="mt-3 flex flex-col sm:flex-row gap-2">
         <button
-          onClick={() => navigate(`/doctor/patients/${a.id}`)} // ← updated path
+          onClick={() => navigate(`/doctor/appointments/${a.id}`)}
           className="flex-1 py-2 text-sm rounded border hover:bg-gray-50"
         >
-          View Patient
+          View Details
         </button>
 
         <button
