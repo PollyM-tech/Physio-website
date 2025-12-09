@@ -155,7 +155,7 @@ const Homepage = () => {
           </div>
           <div className="p-8 rounded-2xl shadow-lg bg-white hover:shadow-2xl transition-all">
             <p className="text-gray-700 mb-4">
-              "Professional and caring. I highly recommend Dr. Okinda."
+              "Professional and caring. I highly recommend Dr. Okindo."
             </p>
             <h4 className="font-bold text-[#041E2A]">Kamau</h4>
             <p className="text-gray-500 text-sm">Patient</p>
