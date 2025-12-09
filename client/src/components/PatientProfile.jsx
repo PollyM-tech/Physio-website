@@ -30,12 +30,12 @@ export default function PatientProfile() {
   // =====================================================
   // DATA LOADING
   // =====================================================
-
   useEffect(() => {
     const token = localStorage.getItem("doctor_token");
 
     if (!token) {
       toast.error("Login required");
+      setLoading(false);
       return;
     }
 
@@ -54,7 +54,7 @@ export default function PatientProfile() {
         if (!profile.ok) throw new Error();
         setPatient(await profile.json());
 
-        // Optional future API hooks — update when endpoints exist
+        // Optional future API hooks
         const sess = await fetch(`${API_BASE_URL}/api/patients/${id}/sessions`, {
           headers
         }).then(r => r.ok ? r.json() : []);
@@ -77,12 +77,10 @@ export default function PatientProfile() {
 
   }, [id]);
 
-  if (loading)
-    return (
-      <div className="text-center mt-20 animate-pulse text-indigo-600">
-        Loading patient profile...
-      </div>
-    );
+  // =====================================================
+  // LOADING / EMPTY STATES
+  // =====================================================
+  if (loading) return <SkeletonLoader />;
 
   if (!patient)
     return (
@@ -91,9 +89,18 @@ export default function PatientProfile() {
       </div>
     );
 
+  // =====================================================
+  // DYNAMIC VITALS (example)
+  // =====================================================
+  const vitals = patient.vitals || {
+    "Pain Level": "3 / 10",
+    "Mobility": "72%",
+    "BP": "118 / 78",
+    "Pulse": "74 bpm"
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-tr from-indigo-50 via-sky-50 to-indigo-100 p-6">
-
       <div className="max-w-7xl mx-auto space-y-10">
 
         {/* ================= QUICK BAR ================= */}
@@ -104,12 +111,12 @@ export default function PatientProfile() {
         </div>
 
         {/* ================= HEADER ================= */}
-        <div className="bg-white/70 backdrop-blur-md shadow-xl rounded-3xl p-6 flex items-center gap-6">
+        <div className="bg-white/70 backdrop-blur-md shadow-xl rounded-3xl p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <div className="h-20 w-20 flex items-center justify-center bg-gradient-to-tr from-indigo-500 to-blue-500 text-white rounded-full shadow-lg">
             <User size={36} />
           </div>
 
-          <div>
+          <div className="text-center sm:text-left">
             <h1 className="text-3xl font-bold text-indigo-700">
               {patient.name}
             </h1>
@@ -130,12 +137,9 @@ export default function PatientProfile() {
         {/* ================= VITALS ================= */}
         <Panel title="Vitals" icon={HeartPulse}>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
-
-            <Vital label="Pain Level" value="3 / 10" />
-            <Vital label="Mobility" value="72%" />
-            <Vital label="BP" value="118 / 78" />
-            <Vital label="Pulse" value="74 bpm" />
-
+            {Object.entries(vitals).map(([label, value]) => (
+              <Vital key={label} label={label} value={value} />
+            ))}
           </div>
         </Panel>
 
@@ -167,7 +171,6 @@ export default function PatientProfile() {
       {editing && (
         <EditModal patient={patient} setEditing={setEditing} />
       )}
-
     </div>
   );
 }
@@ -178,9 +181,8 @@ export default function PatientProfile() {
 
 function Panel({ title, icon, children }) {
   const Icon = icon;
-
   return (
-    <div className="bg-white/70 backdrop-blur-lg border border-white/30 shadow-xl rounded-3xl px-8 py-6">
+    <div className="bg-white/70 backdrop-blur-lg border border-white/30 shadow-xl rounded-3xl px-6 py-5">
       <header className="flex items-center gap-3 mb-5 text-indigo-700">
         <Icon size={22} />
         <h2 className="text-xl font-bold">{title}</h2>
@@ -192,7 +194,6 @@ function Panel({ title, icon, children }) {
 
 function InfoCard({ icon, label, value }) {
   const Icon = icon;
-
   return (
     <div className="bg-white/60 backdrop-blur-lg border border-white/40 shadow-md hover:shadow-xl rounded-2xl p-5 hover:-translate-y-1 transition-all duration-300">
       <div className="flex gap-4 items-center">
@@ -215,34 +216,22 @@ function InfoCard({ icon, label, value }) {
 function Vital({ label, value }) {
   return (
     <div className="bg-indigo-50 rounded-xl p-4 text-center">
-      <p className="text-sm text-gray-500">
-        {label}
-      </p>
-      <p className="mt-1 text-xl font-bold text-indigo-700">
-        {value}
-      </p>
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="mt-1 text-xl font-bold text-indigo-700">{value}</p>
     </div>
   );
 }
 
 function Timeline({ data, emptyText }) {
   if (!data || !data.length)
-    return (
-      <p className="italic text-gray-400">
-        {emptyText}
-      </p>
-    );
+    return <p className="italic text-gray-400">{emptyText}</p>;
 
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-3 max-h-96 overflow-y-auto">
       {data.map((item, i) => (
         <li key={i} className="bg-indigo-50 p-4 rounded-xl">
-          <p className="text-sm text-gray-500">
-            {item.date || "Unknown Date"}
-          </p>
-          <p className="text-gray-800">
-            {item.note || JSON.stringify(item)}
-          </p>
+          <p className="text-sm text-gray-500">{item.date || "Unknown Date"}</p>
+          <p className="text-gray-800">{item.note || JSON.stringify(item)}</p>
         </li>
       ))}
     </ul>
@@ -269,7 +258,7 @@ function EditModal({ patient, setEditing }) {
     setForm({ ...form, [e.target.name]: e.target.value });
 
   return (
-    <div className="fixed inset-0 bg-black/50 glass grid place-items-center z-50">
+    <div className="fixed inset-0 bg-black/50 glass grid place-items-center z-50 p-4">
       <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-xl">
         <h3 className="text-xl font-bold text-indigo-600 mb-4">
           Edit Patient
@@ -295,11 +284,12 @@ function EditModal({ patient, setEditing }) {
             value={form.email}
             onChange={updateField}
             placeholder="Email"
+            type="email"
             className="input"
           />
         </div>
 
-        <div className="flex justify-end gap-3 mt-5">
+        <div className="flex justify-end gap-3 mt-5 flex-wrap">
           <button
             onClick={() => setEditing(false)}
             className="px-4 py-2 bg-gray-200 rounded-lg"
@@ -317,6 +307,24 @@ function EditModal({ patient, setEditing }) {
             Save
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SkeletonLoader() {
+  return (
+    <div className="animate-pulse space-y-6 p-6">
+      <div className="h-24 w-full bg-gray-200 rounded-xl"></div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-24 bg-gray-200 rounded-xl"></div>
+        ))}
+      </div>
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="h-32 bg-gray-200 rounded-2xl"></div>
+        ))}
       </div>
     </div>
   );
