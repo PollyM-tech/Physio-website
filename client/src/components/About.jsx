@@ -15,7 +15,7 @@ const AboutPage = () => {
       {/* Hero / Intro */}
       <section className="bg-gradient-to-br from-[#f0f4f8] via-[#e0f7fa] to-[#fff7ed] py-24 px-6 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold text-[#2EA3DD] mb-4">
-          Dr. David Okinda
+          Dr. David Okindo
         </h1>
         <p className="text-gray-700 text-lg md:text-xl max-w-3xl mx-auto">
           Dedicated to restoring your movement, confidence, and quality of life
@@ -58,7 +58,7 @@ const AboutPage = () => {
           {/* Right Panel */}
           <div className="flex-1 flex flex-col justify-center gap-4 animate-fadeInUp">
             <p className="text-xs tracking-[0.25em] text-[#062B3D] mb-2">
-              ABOUT DR. DAVID OKINDA
+              ABOUT DR. DAVID OKINDO
             </p>
 
             <h3 className="text-3xl md:text-4xl font-bold text-[#2EA3DD] mb-4">
@@ -67,7 +67,7 @@ const AboutPage = () => {
             </h3>
 
             <p className="text-base md:text-lg leading-relaxed mb-4">
-              Dr. David Okinda is a licensed physiotherapist (DPT) with over 10
+              Dr. David Okindo is a licensed physiotherapist (DPT) with over 10
               years of experience helping patients recover from pain, injury,
               and reduced mobility. He combines hands-on treatment with
               education and tailored exercise programs so you understand your
@@ -175,7 +175,7 @@ const AboutPage = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="p-8 rounded-2xl shadow-lg bg-white hover:shadow-2xl transition-all">
             <p className="text-gray-700 mb-4">
-              "Dr. Okinda helped me recover from my knee injury faster than I
+              "Dr. Okindo helped me recover from my knee injury faster than I
               imagined. Highly recommended!"
             </p>
             <h4 className="font-bold text-[#041E2A]">Odhiambo</h4>
@@ -218,7 +218,7 @@ const AboutPage = () => {
       <footer className="py-6 bg-[#041E2A] text-white">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <p>
-            &copy; {new Date().getFullYear()} Dr. David Okinda. All rights
+            &copy; {new Date().getFullYear()} Dr. David Okindo. All rights
             reserved.
           </p>
           <div className="flex gap-4 items-center">

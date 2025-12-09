@@ -12,11 +12,11 @@ const Homepage = () => {
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
               Welcome to{" "}
               <span className="text-[#2EA3DD]">
-                Dr. David Okinda Physiotherapy
+                Dr. David Okindo Physiotherapy
               </span>
             </h1>
             <p className="text-gray-700 text-lg mb-6">
-              Dr. David Okinda is a skilled physiotherapist specializing in pain
+              Dr. David Okindo is a skilled physiotherapist specializing in pain
               relief, injury recovery, and improved mobility. Personalized,
               evidence-based care to help you regain your best self.
             </p>
@@ -174,7 +174,7 @@ const Homepage = () => {
       <footer className="py-6 bg-[#041E2A] text-white">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <p>
-            &copy; {new Date().getFullYear()} Dr. David Okinda. All rights
+            &copy; {new Date().getFullYear()} Dr. David Okindo. All rights
             reserved.
           </p>
           <div className="flex gap-4 items-center">
