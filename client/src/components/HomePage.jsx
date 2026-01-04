@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import heroImg from "../assets/physio.png";
+import heroImg from "../assets/profileimg (3).jpeg";
+import AboutPic from "../assets/profileimg (2).jpeg"
 
 const Homepage = () => {
   return (
@@ -73,7 +74,7 @@ const Homepage = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
           <div className="flex-1 animate-fadeIn">
             <img
-              src={heroImg}
+              src={AboutPic}
               alt="Dr David Okinda"
               className="w-full max-w-[400px] sm:max-w-[500px] h-auto rounded-2xl drop-shadow-2xl mx-auto md:mx-0"
             />

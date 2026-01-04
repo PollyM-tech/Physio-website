@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import profilePic from "../assets/profilepic.jpg";
+import profilePic from "../assets/profileimg (1).jpeg";
 import { Users, Clock, Star, HeartPulse } from "lucide-react";
 
 const AboutPage = () => {
