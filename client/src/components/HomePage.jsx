@@ -1,30 +1,30 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import heroImg from "../assets/profileimg (3).jpeg";
-import AboutPic from "../assets/profileimg (2).jpeg"
+import heroImg from "../assets/profileimage2dp.png";
+import AboutPic from "../assets/profileimg (3).jpeg";
 
 const Homepage = () => {
   return (
     <div className="font-sans">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[#f8fafc] via-white to-[#eef3f8] py-20 sm:py-28 px-6">
+      <section className="relative bg-gradient-to-br from-[#f8fafc] via-white to-[#eef3f8] py-16 sm:py-20 px-6">
         <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-8 md:gap-12">
           {/* Text Content */}
           <div className="flex-1 animate-fadeInUp text-center md:text-left">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4">
-              Welcome to <span className="text-[#2EA3DD]">Dr. David Okinda Physiotherapy</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 leading-snug">
+              Dr. David Okinda – Expert in Sports & Physical Therapy
             </h1>
-            <p className="text-gray-700 text-base sm:text-lg mb-6">
-              Dr. David Okinda is a skilled physiotherapist specializing in pain relief, injury recovery, and improved mobility. Personalized, evidence-based care to help you regain your best self.
+            <p className="text-gray-700 text-base sm:text-lg md:text-lg mb-6 leading-relaxed max-w-xl mx-auto md:mx-0">
+              Helping athletes and active individuals recover from injuries, relieve pain, and improve mobility with personalized, evidence-based care.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link to="/about">
-                <button className="px-6 py-3 rounded-full bg-[#2EA3DD] text-white font-semibold hover:bg-[#0f5e93] transition-all">
+                <button className="px-5 py-2.5 rounded-full bg-[#2EA3DD] text-white font-semibold hover:bg-[#0f5e93] transition-all">
                   Learn About Me
                 </button>
               </Link>
               <Link to="/services">
-                <button className="px-6 py-3 rounded-full border border-[#2EA3DD]/50 text-[#041E2A] font-semibold hover:bg-[#2EA3DD] hover:text-white transition-all">
+                <button className="px-5 py-2.5 rounded-full border border-[#2EA3DD]/50 text-[#041E2A] font-semibold hover:bg-[#2EA3DD] hover:text-white transition-all">
                   View Services
                 </button>
               </Link>
@@ -36,33 +36,33 @@ const Homepage = () => {
             <img
               src={heroImg}
               alt="Dr David Okinda"
-              className="w-full max-w-[400px] sm:max-w-[500px] h-auto rounded-2xl drop-shadow-2xl animate-float"
+              className="w-full max-w-[350px] sm:max-w-[400px] md:max-w-[450px] h-auto rounded-2xl drop-shadow-2xl animate-float"
             />
           </div>
         </div>
       </section>
 
-      {/* Services */}
-      <section className="py-20 sm:py-24 px-6 bg-white">
+      {/* Services Section */}
+      <section className="py-16 sm:py-20 px-6 bg-white">
         <div className="max-w-7xl mx-auto text-center mb-12 animate-fadeIn">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#041E2A]">
             My <span className="text-[#2EA3DD]">Services</span>
           </h2>
           <p className="text-gray-600 text-base sm:text-lg mt-4 max-w-3xl mx-auto">
-            Quick overview of physiotherapy services we provide.
+            Expert physiotherapy services designed to restore mobility, relieve pain, and help you perform at your best.
           </p>
         </div>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
-          {["Pain Management", "Rehabilitation Therapy", "Sports Injury Care"].map((service, idx) => (
+          {[
+            { title: "Pain Management", desc: "Relieve discomfort and restore comfort quickly." },
+            { title: "Rehabilitation Therapy", desc: "Regain strength and mobility after injury or surgery." },
+            { title: "Sports Injury Care", desc: "Specialized care for athletes and active individuals." },
+          ].map((service, idx) => (
             <Link to="/services" key={idx}>
               <div className="p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all bg-[#f9fafb] cursor-pointer text-center sm:text-left">
-                <h3 className="text-2xl font-bold text-[#2EA3DD] mb-2">{service}</h3>
-                <p className="text-gray-700">
-                  {service === "Pain Management" && "Relieve discomfort and restore comfort quickly."}
-                  {service === "Rehabilitation Therapy" && "Regain strength and mobility after injury or surgery."}
-                  {service === "Sports Injury Care" && "Specialized care for athletes and active individuals."}
-                </p>
+                <h3 className="text-2xl font-bold text-[#2EA3DD] mb-2">{service.title}</h3>
+                <p className="text-gray-700">{service.desc}</p>
               </div>
             </Link>
           ))}
@@ -70,7 +70,7 @@ const Homepage = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-20 sm:py-24 px-6 bg-gradient-to-br from-[#eef2f6] via-white to-[#f8fafc]">
+      <section className="py-16 sm:py-20 px-6 bg-gradient-to-br from-[#eef2f6] via-white to-[#f8fafc]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
           <div className="flex-1 animate-fadeIn">
             <img
@@ -81,10 +81,19 @@ const Homepage = () => {
           </div>
           <div className="flex-1 animate-fadeInUp text-center md:text-left">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4">
-              About <span className="text-[#2EA3DD]">Me</span>
+              About <span className="text-[#2EA3DD]">Dr. David Okinda</span>
             </h2>
-            <p className="text-gray-700 text-base sm:text-lg mb-6">
-              Over 10 years of experience in physiotherapy, helping patients recover from injuries, manage pain, and improve mobility. Personalized, evidence-based care.
+            <p className="text-gray-700 text-base sm:text-lg mb-4 leading-relaxed">
+              Dedicated to restoring movement, performance, and quality of life.
+            </p>
+            <p className="text-gray-700 text-base sm:text-lg mb-4 leading-relaxed">
+              Dr. David Okinda is a licensed physiotherapist (DPT) and sports physiotherapy specialist with over 10 years of experience helping patients and athletes recover from pain, injuries, and mobility challenges. He combines hands-on treatment, education, and personalized exercise programs so you understand your body and feel in control of your recovery.
+            </p>
+            <p className="text-gray-700 text-base sm:text-lg mb-4 leading-relaxed">
+              His mission is to provide tailored care that goes beyond symptom relief, addressing the root causes of pain and dysfunction. Whether you’re recovering from a sports injury, surgery, or chronic pain, Dr. Okinda helps you regain strength, prevent injuries, and return to peak performance.
+            </p>
+            <p className="italic text-gray-500 text-sm sm:text-base mb-6">
+              “A physiotherapist only needs his hands, brain, and heart to treat a person.”
             </p>
             <Link to="/about">
               <button className="px-6 py-3 rounded-full bg-[#2EA3DD] text-white font-semibold hover:bg-[#0f5e93] transition-all">
@@ -96,7 +105,7 @@ const Homepage = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 sm:py-24 px-6 bg-white text-center">
+      <section className="py-16 sm:py-20 px-6 bg-white text-center">
         <div className="max-w-7xl mx-auto animate-fadeIn">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#041E2A] mb-4">
             Get in <span className="text-[#2EA3DD]">Touch</span>
@@ -112,8 +121,8 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 sm:py-24 px-6 bg-gradient-to-br from-[#eef2f6] via-white to-[#f8fafc]">
+      {/* Testimonials Section */}
+      <section className="py-16 sm:py-20 px-6 bg-gradient-to-br from-[#eef2f6] via-white to-[#f8fafc]">
         <div className="max-w-7xl mx-auto text-center mb-12 animate-fadeIn">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#041E2A]">
             Patient <span className="text-[#2EA3DD]">Reviews</span>

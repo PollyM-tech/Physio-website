@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Phone, Clock, MapPin } from "lucide-react";
+import { Phone, Clock, MapPin, Mail } from "lucide-react";
 import { useAppointments } from "../context/AppointmentsContext";
 import { API_BASE_URL } from "../apiConfig";
 
@@ -97,7 +97,12 @@ const ContactPage = () => {
               {
                 icon: <Phone className="text-[#06B6D4] mt-1" size={24} />,
                 title: "Call / SMS",
-                desc: "+254 714 660729",
+                desc: "+254 714 704586",
+              },
+              {
+                icon:<Mail className="text-[#06B6D4] mt-1" size={24} />,  
+                title: "Email",
+                desc: "davidoanda62@gmail.com"
               },
               {
                 icon: <Clock className="text-[#FBBF24] mt-1" size={24} />,

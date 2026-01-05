@@ -10,6 +10,9 @@ import joints from "../assets/joints.png";
 import footMuscle from "../assets/footmuscle.png";
 import handInjury from "../assets/hand injury.png";
 import discBulge from "../assets/discbulge.png";
+import StrainedHamstring from "../assets/strained hamstring.jpeg";
+import SportPhysio from "../assets/sport-physio.jpeg"
+import KneeTendon from "../assets/knee-tendon.jpeg"
 
 const SERVICES_DATA = [
   { id: 1, title: "Lower Back Pain Relief", image: backPain },
@@ -21,6 +24,9 @@ const SERVICES_DATA = [
   { id: 7, title: "Foot Muscle Strengthening", image: footMuscle },
   { id: 8, title: "Hand Injury Recovery", image: handInjury },
   { id: 9, title: "Disc Bulge Treatment", image: discBulge },
+  { id: 10, title: "Knee & Tendon Pain", image: KneeTendon },
+  { id: 11, title: "Strained Hamstring", image: StrainedHamstring },
+  { id: 12, title: "Sports Physiotherapy", image: SportPhysio },
 ];
 
 const Services = () => {
@@ -29,7 +35,8 @@ const Services = () => {
       {/* MAIN SERVICES SECTION */}
       <section className="bg-gradient-to-b from-[#E0F2FF] via-[#F5F5F5] to-[#FFEFE5] py-16 sm:py-20 md:py-28">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 md:px-10">
-          {/* Heading */}
+          
+          {/* Heading + Tagline */}
           <motion.div
             className="text-center mb-12 sm:mb-16"
             initial={{ opacity: 0, y: 30 }}
@@ -38,7 +45,7 @@ const Services = () => {
             transition={{ duration: 0.8 }}
           >
             <motion.h1
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[0.05em] sm:tracking-[0.1em] text-[#4A90E2]"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#4A90E2]"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -46,12 +53,12 @@ const Services = () => {
               PHYSIOTHERAPY SERVICES
             </motion.h1>
             <motion.p
-              className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl text-gray-700 max-w-3xl mx-auto"
+              className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
             >
-              Helping you move better, feel stronger, and live pain-free.
+              Physiotherapy Services for Sports & Everyday Movement — Helping you recover from injuries, prevent pain, and stay active. Move better, feel stronger, and live pain-free.
             </motion.p>
           </motion.div>
 

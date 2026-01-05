@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import profilePic from "../assets/profileimg (1).jpeg";
+import profilePic from "../assets/profileimg (3).jpeg";
 import { Users, Clock, Star, HeartPulse } from "lucide-react";
 
 const AboutPage = () => {
@@ -18,11 +18,11 @@ const AboutPage = () => {
           Dr. David Okinda
         </h1>
         <p className="text-gray-700 text-base sm:text-lg md:text-xl max-w-3xl mx-auto">
-          Dedicated to restoring your movement, confidence, and quality of life through personalized physiotherapy care, evidence-based methods, and compassionate treatment.
+          Dedicated to restoring movement, performance, and quality of life
         </p>
       </section>
 
-      {/* Profile & Stats */}
+      {/* About Me Section */}
       <section className="py-20 sm:py-24 px-6">
         <div className="max-w-[1240px] mx-auto flex flex-col md:flex-row items-start gap-8 sm:gap-12">
           {/* Left Panel */}
@@ -60,15 +60,15 @@ const AboutPage = () => {
             </p>
 
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2EA3DD] mb-4">
-              Dedicated to restoring your movement, confidence, and quality of life
+              Dedicated to restoring movement, performance, and quality of life
             </h3>
 
             <p className="text-base sm:text-lg md:text-lg leading-relaxed mb-4">
-              Dr. David Okinda is a licensed physiotherapist (DPT) with over 10 years of experience helping patients recover from pain, injury, and reduced mobility. He combines hands-on treatment with education and tailored exercise programs so you understand your body and feel in control of your recovery.
+              Dr. David Okinda is a licensed physiotherapist (DPT) and sports physiotherapy specialist with over 10 years of experience helping patients and athletes recover from pain, injuries, and mobility challenges. He combines hands-on treatment, education, and personalized exercise programs so you understand your body and feel in control of your recovery.
             </p>
 
             <p className="text-base sm:text-lg md:text-lg leading-relaxed mb-4">
-              His goal is to provide personalized care that not only treats symptoms but addresses the root cause of pain and dysfunction—ensuring long-term recovery, improved mobility, and well-being.
+              His mission is to provide tailored care that goes beyond symptom relief, addressing the root causes of pain and dysfunction. Whether you’re recovering from a sports injury, surgery, or chronic pain, Dr. Okinda helps you regain strength, prevent injuries, and return to peak performance.
             </p>
 
             <p className="italic text-gray-500 text-sm sm:text-base mb-6">
