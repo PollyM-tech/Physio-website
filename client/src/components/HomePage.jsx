@@ -6,10 +6,15 @@ import AboutPic from "../assets/profileimg (3).jpeg";
 const Homepage = () => {
   return (
     <div className="font-sans">
+
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[#f8fafc] via-white to-[#eef3f8] py-16 sm:py-20 px-6">
+      <section className="relative bg-gradient-to-br from-[#f8fafc] via-white to-[#eef3f8] py-16 sm:py-20 px-6 overflow-hidden">
+        {/* Floating shapes */}
+        <div className="absolute top-0 left-0 w-44 h-44 sm:w-60 sm:h-60 bg-[#2EA3DD]/20 rounded-full blur-3xl animate-floatSlow -z-10"></div>
+        <div className="absolute bottom-8 right-8 w-56 h-56 sm:w-72 sm:h-72 bg-[#FBBF24]/20 rounded-full blur-3xl animate-floatSlow2 -z-10"></div>
+
         <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-8 md:gap-12">
-          {/* Text Content */}
+          {/* Text */}
           <div className="flex-1 animate-fadeInUp text-center md:text-left">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 leading-snug">
               Dr. David Okinda – Expert in Sports & Physical Therapy
@@ -31,7 +36,7 @@ const Homepage = () => {
             </div>
           </div>
 
-          {/* Image */}
+          {/* Hero Image */}
           <div className="flex-1 flex justify-center md:justify-end animate-fadeIn">
             <img
               src={heroImg}
@@ -104,7 +109,7 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* Contact Call-to-Action Section */}
       <section className="py-16 sm:py-20 px-6 bg-white text-center">
         <div className="max-w-7xl mx-auto animate-fadeIn">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#041E2A] mb-4">
@@ -148,21 +153,17 @@ const Homepage = () => {
 
       {/* Footer */}
       <footer className="py-6 bg-[#041E2A] text-white">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6">
-          <p className="text-sm sm:text-base">
-            &copy; {new Date().getFullYear()} Dr. David Okinda. All rights reserved.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center">
-            <a href="#" className="hover:text-[#2EA3DD] transition-colors text-sm sm:text-base">
-              LinkedIn
-            </a>
-            <a
-              href="/login"
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 text-sm sm:text-base">
+          <p>&copy; {new Date().getFullYear()} Dr. David Okinda. All rights reserved.</p>
+          <div className="flex gap-4 items-center">
+            <a href="#" className="hover:text-[#2EA3DD] transition-colors">LinkedIn</a>
+            <Link
+              to="/login"
               className="text-xs sm:text-sm text-gray-400 hover:text-gray-200 underline"
               title="Doctor Login"
             >
               DOCTOR DAVID
-            </a>
+            </Link>
           </div>
         </div>
       </footer>
