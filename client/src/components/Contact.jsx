@@ -27,6 +27,13 @@ const ContactPage = () => {
     setLoading(true);
     setStatus(null);
 
+    // Validate future datetime
+    if (new Date(formData.datetime) < new Date()) {
+      setStatus({ type: "error", message: "Please select a future date and time." });
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(`${API_BASE_URL}/api/appointments`, {
         method: "POST",
@@ -50,6 +57,7 @@ const ContactPage = () => {
           datetime: "",
           message: "",
         });
+        window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top for feedback
       } else {
         const data = await res.json().catch(() => ({}));
         setStatus({
@@ -100,9 +108,9 @@ const ContactPage = () => {
                 desc: "+254 714 704586",
               },
               {
-                icon:<Mail className="text-[#06B6D4] mt-1" size={24} />,  
+                icon: <Mail className="text-[#06B6D4] mt-1" size={24} />,
                 title: "Email",
-                desc: "davidoanda62@gmail.com"
+                desc: "davidoanda62@gmail.com",
               },
               {
                 icon: <Clock className="text-[#FBBF24] mt-1" size={24} />,
@@ -147,60 +155,80 @@ const ContactPage = () => {
             )}
 
             <form className="flex flex-col gap-3 sm:gap-4" onSubmit={handleSubmit}>
+              <label htmlFor="name" className="sr-only">Full Name</label>
               <input
+                id="name"
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Full Name"
-                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD] hover:ring-[#2EA3DD]"
                 required
+                aria-required="true"
               />
+
+              <label htmlFor="email" className="sr-only">Email</label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Email (optional)"
-                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD] hover:ring-[#2EA3DD]"
               />
+
+              <label htmlFor="phone" className="sr-only">Phone Number</label>
               <input
+                id="phone"
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Phone Number"
-                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD] hover:ring-[#2EA3DD]"
                 required
                 pattern="^(?:\\+254|254|0)(7|1)[0-9]{8}$|^\\+?[0-9]{7,15}$"
                 title="Enter a valid phone number."
               />
+
+              <label htmlFor="location" className="sr-only">Select Location</label>
               <select
+                id="location"
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD] hover:ring-[#2EA3DD]"
+                required
               >
                 <option>Tender Touch Clinic (KMA Centre, Upperhill)</option>
                 <option>House Call</option>
                 <option>Kenyatta National Hospital (KNH)</option>
               </select>
+
+              <label htmlFor="datetime" className="sr-only">Appointment Date & Time</label>
               <input
+                id="datetime"
                 type="datetime-local"
                 name="datetime"
                 value={formData.datetime}
                 onChange={handleChange}
                 required
-                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD] hover:ring-[#2EA3DD]"
               />
+
+              <label htmlFor="message" className="sr-only">Message</label>
               <textarea
+                id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 rows="4"
                 placeholder="Briefly describe your concern"
-                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
+                className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD] hover:ring-[#2EA3DD]"
               />
+
               <button
                 type="submit"
                 disabled={loading}
