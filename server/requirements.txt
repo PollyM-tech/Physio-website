@@ -10,4 +10,4 @@ python-dotenv
 sqlalchemy-serializer
 PyJWT
 gunicorn
-
+react-typed --save
