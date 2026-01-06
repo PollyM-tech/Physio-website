@@ -37,17 +37,23 @@ const AboutPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-4 w-full justify-around text-center">
               <div className="p-4 bg-[#2EA3DD]/10 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer">
                 <Users className="mx-auto mb-1 text-[#2EA3DD]" />
-                <h4 className="text-xl sm:text-2xl font-bold text-[#2EA3DD]">1500+</h4>
+                <h4 className="text-xl sm:text-2xl font-bold text-[#2EA3DD]">
+                  1500+
+                </h4>
                 <p className="text-sm text-gray-700">Patients Supported</p>
               </div>
               <div className="p-4 bg-[#06B6D4]/10 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer">
                 <Clock className="mx-auto mb-1 text-[#06B6D4]" />
-                <h4 className="text-xl sm:text-2xl font-bold text-[#06B6D4]">10+</h4>
+                <h4 className="text-xl sm:text-2xl font-bold text-[#06B6D4]">
+                  10+
+                </h4>
                 <p className="text-sm text-gray-700">Years in Practice</p>
               </div>
               <div className="p-4 bg-[#FBBF24]/10 rounded-xl shadow-lg hover:shadow-2xl transition-all cursor-pointer">
                 <Star className="mx-auto mb-1 text-[#FBBF24]" />
-                <h4 className="text-xl sm:text-2xl font-bold text-[#FBBF24]">3</h4>
+                <h4 className="text-xl sm:text-2xl font-bold text-[#FBBF24]">
+                  3
+                </h4>
                 <p className="text-sm text-gray-700">Core Specialties</p>
               </div>
             </div>
@@ -64,27 +70,43 @@ const AboutPage = () => {
             </h3>
 
             <p className="text-base sm:text-lg md:text-lg leading-relaxed mb-4">
-              Dr. David Okinda is a licensed physiotherapist (DPT) and sports physiotherapy specialist with over 10 years of experience helping patients and athletes recover from pain, injuries, and mobility challenges. He combines hands-on treatment, education, and personalized exercise programs so you understand your body and feel in control of your recovery.
+              Dr. David Okinda is a licensed physical therapist (DPT) and sports
+              physio specialist with over 10 years of experience helping
+              patients and athletes recover from pain, injuries, and mobility
+              challenges. He combines hands-on treatment, education, and
+              personalized exercise programs so you understand your body and
+              feel in control of your recovery.
             </p>
 
             <p className="text-base sm:text-lg md:text-lg leading-relaxed mb-4">
-              His mission is to provide tailored care that goes beyond symptom relief, addressing the root causes of pain and dysfunction. Whether you’re recovering from a sports injury, surgery, or chronic pain, Dr. Okinda helps you regain strength, prevent injuries, and return to peak performance.
+              His mission is to provide tailored care that goes beyond symptom
+              relief, addressing the root causes of pain and dysfunction.
+              Whether you’re recovering from a sports injury, surgery, or
+              chronic pain, Dr. Okinda helps you regain strength, prevent
+              injuries, and return to peak performance.
             </p>
 
             <p className="italic text-gray-500 text-sm sm:text-base mb-6">
-              “A physiotherapist only needs his hands, brain, and heart to treat a person.”
+              “A physiotherapist only needs his hands, brain, and heart to treat
+              a person.”
             </p>
 
             {showMore && (
               <div className="text-sm sm:text-base leading-relaxed mb-6 space-y-3">
                 <p>
-                  Every session begins with a careful interview and physical assessment so we can understand your history, daily routine, and what truly matters to you.
+                  Every session begins with a careful interview and physical
+                  assessment so we can understand your history, daily routine,
+                  and what truly matters to you.
                 </p>
                 <p>
-                  Treatment blends manual therapy, tailored exercise, and pain education. You receive a practical home program—with clear demonstrations.
+                  Treatment blends manual therapy, tailored exercise, and pain
+                  education. You receive a practical home program—with clear
+                  demonstrations.
                 </p>
                 <p>
-                  My areas of focus include sports physiotherapy, spine care, and rehabilitation after injury or surgery, delivered either in the clinic or through house calls.
+                  My areas of focus include sports physio, spine care, and
+                  rehabilitation after injury or surgery, delivered either in
+                  the clinic or through house calls.
                 </p>
               </div>
             )}
@@ -106,30 +128,39 @@ const AboutPage = () => {
             Core <span className="text-[#2EA3DD]">Specialties</span>
           </h2>
           <p className="text-gray-600 text-base sm:text-lg mt-4 max-w-3xl mx-auto">
-            Expert services to restore your mobility and improve your quality of life.
+            Expert services to restore your mobility and improve your quality of
+            life.
           </p>
         </div>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
           <div className="p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all bg-[#FBBF24]/10 cursor-pointer text-center">
             <HeartPulse className="mx-auto mb-2 text-[#FBBF24]" size={40} />
-            <h3 className="text-xl sm:text-2xl font-bold text-[#FBBF24] mb-2">Pain Management</h3>
+            <h3 className="text-xl sm:text-2xl font-bold text-[#FBBF24] mb-2">
+              Pain Management
+            </h3>
             <p className="text-gray-700 text-sm sm:text-base">
-              Evidence-based techniques to relieve pain and restore comfort quickly.
+              Evidence-based techniques to relieve pain and restore comfort
+              quickly.
             </p>
           </div>
           <div className="p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all bg-[#06B6D4]/10 cursor-pointer text-center">
             <Star className="mx-auto mb-2 text-[#06B6D4]" size={40} />
-            <h3 className="text-xl sm:text-2xl font-bold text-[#06B6D4] mb-2">Rehabilitation Therapy</h3>
+            <h3 className="text-xl sm:text-2xl font-bold text-[#06B6D4] mb-2">
+              Rehabilitation Therapy
+            </h3>
             <p className="text-gray-700 text-sm sm:text-base">
-              Customized rehab programs to regain strength and mobility after injury.
+              Customized rehab programs to regain strength and mobility after
+              injury.
             </p>
           </div>
           <div className="p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all bg-[#2EA3DD]/10 cursor-pointer text-center">
             <Users className="mx-auto mb-2 text-[#2EA3DD]" size={40} />
-            <h3 className="text-xl sm:text-2xl font-bold text-[#2EA3DD] mb-2">Sports Injury Care</h3>
+            <h3 className="text-xl sm:text-2xl font-bold text-[#2EA3DD] mb-2">
+              Sports Injury Care
+            </h3>
             <p className="text-gray-700 text-sm sm:text-base">
-              Specialized therapy for athletes and active individuals to recover fast.
+              Specialized therapy for sports and active individuals to support recovery.
             </p>
           </div>
         </div>
@@ -148,11 +179,26 @@ const AboutPage = () => {
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
           {[
-            { name: "Odhiambo", review: "Dr. Okinda helped me recover from my knee injury faster than I imagined. Highly recommended!" },
-            { name: "Kamau", review: "Professional, caring, and effective physiotherapy. I feel stronger and healthier." },
-            { name: "Wanjiru", review: "The best physiotherapist I’ve visited. Personalized care and amazing results." },
+            {
+              name: "Odhiambo",
+              review:
+                "Dr. Okinda helped me recover from my knee injury faster than I imagined. Highly recommended!",
+            },
+            {
+              name: "Kamau",
+              review:
+                "Professional, caring, and effective physiotherapy. I feel stronger and healthier.",
+            },
+            {
+              name: "Wanjiru",
+              review:
+                "The best physiotherapist I’ve visited. Personalized care and amazing results.",
+            },
           ].map((t, idx) => (
-            <div key={idx} className="p-6 sm:p-8 rounded-2xl shadow-lg bg-white hover:shadow-2xl transition-all text-center">
+            <div
+              key={idx}
+              className="p-6 sm:p-8 rounded-2xl shadow-lg bg-white hover:shadow-2xl transition-all text-center"
+            >
               <p className="text-gray-700 mb-4">"{t.review}"</p>
               <h4 className="font-bold text-[#041E2A]">{t.name}</h4>
               <p className="text-gray-500 text-sm">Patient</p>
@@ -180,9 +226,14 @@ const AboutPage = () => {
       {/* Footer */}
       <footer className="py-6 bg-[#041E2A] text-white">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 text-sm sm:text-base">
-          <p>&copy; {new Date().getFullYear()} Dr. David Okinda. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Dr. David Okinda. All rights
+            reserved.
+          </p>
           <div className="flex gap-4 items-center">
-            <a href="#" className="hover:text-[#2EA3DD] transition-colors">LinkedIn</a>
+            <a href="#" className="hover:text-[#2EA3DD] transition-colors">
+              LinkedIn
+            </a>
           </div>
         </div>
       </footer>
