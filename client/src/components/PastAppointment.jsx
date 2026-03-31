@@ -1,66 +1,23 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { API_BASE_URL } from "../apiConfig";
+import React, { useState, useMemo } from "react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import toast from "react-hot-toast";
 
 export default function PastAppointments() {
-  const [appointments, setAppointments] = useState([]);
   const [notesDraft, setNotesDraft] = useState({});
-  const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
-  const [error, setError] = useState("");
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchPast = async () => {
-      const token = localStorage.getItem("doctor_token");
-      if (!token) {
-        toast.error("Session expired. Please log in again.");
-        setLoading(false);
-        navigate("/login");
-        return;
-      }
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/appointments`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (res.status === 401) {
-          toast.error("Session expired.");
-          navigate("/login");
-          return;
-        }
-
-        if (!res.ok) throw new Error("Failed to load appointments");
-        const data = await res.json();
-        setAppointments(data);
-
-        const drafts = {};
-        data.forEach((a) => (drafts[a.id] = ""));
-        setNotesDraft(drafts);
-      } catch (err) {
-        toast.error("Error loading appointments");
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPast();
-  }, [navigate]);
+  const appointments = useQuery(api.appointments.listAppointments);
+  const updateAppointment = useMutation(api.appointments.updateAppointment);
+  const loading = appointments === undefined;
 
   const past = useMemo(() => {
-    const now = new Date();
-    return appointments.filter((a) => a.datetime && new Date(a.datetime) < now);
+    if (!appointments) return [];
+    const now = Date.now();
+    return appointments.filter((a) => a.scheduledAt && a.scheduledAt < now);
   }, [appointments]);
 
   const filtered = useMemo(() => {
@@ -79,10 +36,10 @@ export default function PastAppointments() {
         p.name,
         p.phone,
         p.location,
-        p.datetime ? new Date(p.datetime).toLocaleString() : "",
+        p.scheduledAt ? new Date(p.scheduledAt).toLocaleString() : "",
         p.status,
         p.message || "",
-        p.doctor_notes || "",
+        p.doctorNotes || "",
       ]),
     ]
       .map((row) => row.map((cell) => `"${cell}"`).join(","))
@@ -98,18 +55,9 @@ export default function PastAppointments() {
   };
 
   const saveNotes = async (id, notes) => {
-    const token = localStorage.getItem("doctor_token");
-    if (!token) return toast.error("Login expired");
     setSavingId(id);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/appointments/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ notes }),
-      });
-      if (!res.ok) throw new Error("Failed to save");
-      const updated = await res.json();
-      setAppointments((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
+      await updateAppointment({ id, doctorNotes: notes });
       setNotesDraft((prev) => ({ ...prev, [id]: "" }));
       toast.success("Notes saved");
     } catch {
@@ -120,7 +68,6 @@ export default function PastAppointments() {
   };
 
   if (loading) return <SkeletonLoader />;
-  if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
 
   return (
     <section className="space-y-6 p-4">
@@ -158,10 +105,12 @@ export default function PastAppointments() {
 
       {/* Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.length === 0 && <p className="text-gray-500 col-span-full">No past appointments found.</p>}
+        {filtered.length === 0 && (
+          <p className="text-gray-500 col-span-full">No past appointments found.</p>
+        )}
         {filtered.map((p) => (
           <div
-            key={p.id}
+            key={p._id}
             onClick={() => setSelectedAppointment(p)}
             className="cursor-pointer bg-white/80 dark:bg-gray-800/80 backdrop-blur border border-slate-200 dark:border-slate-700 p-5 rounded-2xl shadow transition hover:shadow-xl hover:-translate-y-1 flex flex-col"
           >
@@ -171,7 +120,8 @@ export default function PastAppointments() {
                   {p.name} <span className="text-sm text-slate-400">({p.phone})</span>
                 </h3>
                 <p className="text-xs text-slate-500 truncate">
-                  {p.location} • {p.datetime ? new Date(p.datetime).toLocaleString() : "No date"}
+                  {p.location} •{" "}
+                  {p.scheduledAt ? new Date(p.scheduledAt).toLocaleString() : "No date"}
                 </p>
               </div>
               <span
@@ -189,9 +139,9 @@ export default function PastAppointments() {
             <p className="text-sm text-slate-700 dark:text-slate-300 truncate">
               <span className="font-semibold">Message:</span> {p.message || "No message"}
             </p>
-            {p.doctor_notes && (
+            {p.doctorNotes && (
               <p className="text-xs italic text-slate-400 truncate">
-                <span className="font-medium">Last notes:</span> {p.doctor_notes}
+                <span className="font-medium">Last notes:</span> {p.doctorNotes}
               </p>
             )}
           </div>
@@ -202,20 +152,21 @@ export default function PastAppointments() {
       {selectedAppointment && (
         <AppointmentModal
           appointment={selectedAppointment}
-          notesDraft={notesDraft[selectedAppointment.id] || ""}
+          notesDraft={notesDraft[selectedAppointment._id] || ""}
           onChangeNotes={(notes) =>
-            setNotesDraft((prev) => ({ ...prev, [selectedAppointment.id]: notes }))
+            setNotesDraft((prev) => ({ ...prev, [selectedAppointment._id]: notes }))
           }
-          onSave={() => saveNotes(selectedAppointment.id, notesDraft[selectedAppointment.id])}
+          onSave={() =>
+            saveNotes(selectedAppointment._id, notesDraft[selectedAppointment._id] || "")
+          }
           onClose={() => setSelectedAppointment(null)}
-          saving={savingId === selectedAppointment.id}
+          saving={savingId === selectedAppointment._id}
         />
       )}
     </section>
   );
 }
 
-/* Skeleton Loader */
 function SkeletonLoader() {
   return (
     <div className="space-y-4 p-4 animate-pulse">
@@ -229,17 +180,29 @@ function SkeletonLoader() {
   );
 }
 
-/* AppointmentModal.jsx */
 export function AppointmentModal({ appointment, notesDraft, onChangeNotes, onSave, onClose, saving }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-3xl max-w-lg w-full p-6 shadow-xl overflow-y-auto max-h-[90vh]">
         <h3 className="text-xl font-bold text-indigo-600 mb-4 truncate">{appointment.name}</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2"><strong>Phone:</strong> {appointment.phone}</p>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2"><strong>Location:</strong> {appointment.location}</p>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2"><strong>Date:</strong> {appointment.datetime ? new Date(appointment.datetime).toLocaleString() : "No date"}</p>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2"><strong>Status:</strong> {appointment.status}</p>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4"><strong>Patient Message:</strong> {appointment.message || "No message"}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+          <strong>Phone:</strong> {appointment.phone}
+        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+          <strong>Location:</strong> {appointment.location}
+        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+          <strong>Date:</strong>{" "}
+          {appointment.scheduledAt
+            ? new Date(appointment.scheduledAt).toLocaleString()
+            : "No date"}
+        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+          <strong>Status:</strong> {appointment.status}
+        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+          <strong>Patient Message:</strong> {appointment.message || "No message"}
+        </p>
 
         <textarea
           rows={4}
@@ -249,11 +212,15 @@ export function AppointmentModal({ appointment, notesDraft, onChangeNotes, onSav
           onChange={(e) => onChangeNotes(e.target.value)}
         />
         <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-lg">Close</button>
+          <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-lg">
+            Close
+          </button>
           <button
             onClick={onSave}
             disabled={saving}
-            className={`px-4 py-2 rounded-lg text-white ${saving ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"}`}
+            className={`px-4 py-2 rounded-lg text-white ${
+              saving ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
           >
             {saving ? "Saving..." : "Save Notes"}
           </button>

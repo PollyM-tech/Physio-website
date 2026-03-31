@@ -1,21 +1,23 @@
 import React, { useState } from "react";
 import { Phone, Clock, MapPin, Mail } from "lucide-react";
-import { useAppointments } from "../context/AppointmentsContext";
-import { API_BASE_URL } from "../apiConfig";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+
+const INITIAL_FORM = {
+  name: "",
+  email: "",
+  phone: "",
+  location: "Tender Touch Clinic (KMA Centre, Upperhill)",
+  datetime: "",
+  message: "",
+};
 
 const ContactPage = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    location: "Tender Touch Clinic (KMA Centre, Upperhill)",
-    datetime: "",
-    message: "",
-  });
-
-  const { addAppointment } = useAppointments();
+  const [formData, setFormData] = useState(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
+
+  const createAppointment = useMutation(api.appointments.createAppointment);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,39 +30,26 @@ const ContactPage = () => {
     setStatus(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/appointments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      await createAppointment({
+        name: formData.name,
+        phone: formData.phone,
+        location: formData.location,
+        scheduledAt: new Date(formData.datetime).getTime(),
+        email: formData.email || undefined,
+        message: formData.message || undefined,
       });
 
-      if (res.ok) {
-        const created = await res.json();
-        addAppointment?.(created);
-        setStatus({
-          type: "success",
-          message:
-            "Your booking request was sent successfully. You will be contacted to confirm the appointment.",
-        });
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          location: "Tender Touch Clinic (KMA Centre, Upperhill)",
-          datetime: "",
-          message: "",
-        });
-      } else {
-        const data = await res.json().catch(() => ({}));
-        setStatus({
-          type: "error",
-          message: data.message || "Something went wrong. Try again.",
-        });
-      }
-    } catch {
+      setStatus({
+        type: "success",
+        message:
+          "Your booking request was sent successfully. You will be contacted to confirm the appointment.",
+      });
+      setFormData(INITIAL_FORM);
+    } catch (err) {
+      console.error(err);
       setStatus({
         type: "error",
-        message: "Network error. Please check your connection.",
+        message: "Something went wrong. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -100,9 +89,9 @@ const ContactPage = () => {
                 desc: "+254 714 704586",
               },
               {
-                icon:<Mail className="text-[#06B6D4] mt-1" size={24} />,  
+                icon: <Mail className="text-[#06B6D4] mt-1" size={24} />,
                 title: "Email",
-                desc: "davidoanda62@gmail.com"
+                desc: "davidoanda62@gmail.com",
               },
               {
                 icon: <Clock className="text-[#FBBF24] mt-1" size={24} />,
@@ -172,7 +161,7 @@ const ContactPage = () => {
                 placeholder="Phone Number"
                 className="w-full rounded-xl border border-gray-300 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2EA3DD]"
                 required
-                pattern="^(?:\\+254|254|0)(7|1)[0-9]{8}$|^\\+?[0-9]{7,15}$"
+                pattern="^(?:\+254|254|0)(7|1)[0-9]{8}$|^\+?[0-9]{7,15}$"
                 title="Enter a valid phone number."
               />
               <select

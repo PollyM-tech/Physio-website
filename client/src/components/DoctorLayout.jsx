@@ -2,18 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { Sun, Moon, LogOut, List, Clock, History, CalendarCheck, Menu } from "lucide-react";
 import { Toaster } from "react-hot-toast";
-import { useAppointments } from "../context/AppointmentsContext";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export default function DoctorLayout() {
   const [dark, setDark] = useState(() => localStorage.getItem("doctor_theme") === "dark");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { upcomingAppointments } = useAppointments();
+  const { signOut } = useAuthActions();
+
+  const appointments = useQuery(api.appointments.listAppointments) ?? [];
 
   // Count today's appointments
-  const todayCount = upcomingAppointments.filter((a) => {
-    const dt = new Date(a.datetime);
-    const now = new Date();
-    return dt.toDateString() === now.toDateString();
+  const todayCount = appointments.filter((a) => {
+    const dt = new Date(a.scheduledAt);
+    return dt.toDateString() === new Date().toDateString();
   }).length;
 
   // Dark mode toggle
@@ -23,10 +26,8 @@ export default function DoctorLayout() {
     localStorage.setItem("doctor_theme", dark ? "dark" : "light");
   }, [dark]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("doctor_auth");
-    localStorage.removeItem("doctor_token");
-    localStorage.removeItem("doctor_info");
+  const handleLogout = async () => {
+    await signOut();
     window.location.href = "/login";
   };
 
@@ -101,7 +102,9 @@ export default function DoctorLayout() {
       </aside>
 
       {/* OVERLAY FOR MOBILE */}
-      {sidebarOpen && <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
 
       {/* MAIN PANEL */}
       <main className="flex-1 p-6 lg:p-8 text-gray-900 dark:text-gray-100 transition">
